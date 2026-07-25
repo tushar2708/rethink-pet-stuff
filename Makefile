@@ -58,8 +58,8 @@ build-backend: ## Build backend TypeScript
 db-generate: ## Generate Prisma client
 	cd $(BACKEND_DIR) && npx prisma generate
 
-db-migrate: ## Create and apply Prisma migration (dev)
-	cd $(BACKEND_DIR) && npx prisma migrate dev
+db-migrate: ## Create and apply migration (optional NAME=xxx)
+	cd $(BACKEND_DIR) && npx prisma migrate dev $(if $(NAME),--name $(NAME),)
 
 db-migrate-create: ## Create migration without applying (requires NAME=xxx)
 	cd $(BACKEND_DIR) && npx prisma migrate dev --create-only --name $(NAME)

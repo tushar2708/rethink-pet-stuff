@@ -13,6 +13,10 @@ import { gigOnboardingRouter, gigWorkerRouter } from "./routes/gigWorkers";
 import appointmentRoutes from "./routes/appointments";
 import userRoutes from "./routes/users";
 import reviewRoutes from "./routes/reviews";
+import breedRoutes from "./routes/breeds";
+import { getTemplates } from "./controllers/healthController";
+import { validate } from "./middleware/validate";
+import { healthTemplateQuerySchema } from "./schemas/healthSchemas";
 
 const app = express();
 
@@ -33,6 +37,8 @@ app.use("/api/gig-workers", gigWorkerRouter);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/breeds", breedRoutes);
+app.get("/api/health-templates", validate({ query: healthTemplateQuerySchema }), getTemplates);
 
 app.get("/api/health", (_req, res) => {
   res.json({ success: true, data: { status: "ok", timestamp: new Date().toISOString() } });

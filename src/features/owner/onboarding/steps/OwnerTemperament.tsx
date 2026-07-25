@@ -44,11 +44,21 @@ export function OwnerTemperament() {
           petType: allData.petType || "dog",
           customType: allData.customType,
           breed: allData.breed,
-          ageYears: allData.ageYears ? Number(allData.ageYears) : undefined,
-          ageMonths: allData.ageMonths ? Number(allData.ageMonths) : undefined,
+          ageYears: allData.dateOfBirth
+            ? Math.floor((Date.now() - new Date(allData.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
+            : allData.ageYears ? Number(allData.ageYears) : undefined,
+          ageMonths: allData.dateOfBirth
+            ? Math.floor(((Date.now() - new Date(allData.dateOfBirth).getTime()) / (30.44 * 24 * 60 * 60 * 1000)) % 12)
+            : allData.ageMonths ? Number(allData.ageMonths) : undefined,
           temperament: allData.temperament || "calm",
           energyLevel: allData.energyLevel || "low",
           petPhoto: typeof allData.petPhoto === "string" ? allData.petPhoto : undefined,
+          gender: allData.gender,
+          dateOfBirth: allData.dateOfBirth,
+          weightKg: allData.weightKg ? Number(allData.weightKg) : undefined,
+          lifestyle: allData.lifestyle,
+          isNeutered: allData.isNeutered ?? false,
+          completedVaccinations: allData.completedVaccinations || [],
         }),
       })
       navigate("/owner/onboarding/complete")

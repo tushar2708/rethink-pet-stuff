@@ -23,4 +23,10 @@ router.put(
 );
 router.delete("/:id", validate({ params: petIdParamSchema }), petController.remove);
 
+// Nested health + medical routes
+import healthRoutes from "./health";
+import medicalEventRoutes from "./medicalEvents";
+router.use("/", healthRoutes);
+router.use("/", medicalEventRoutes);
+
 export default router;

@@ -24,11 +24,20 @@ export function AddPetComplete() {
       type: data.petType,
       customType: data.customType,
       breed: data.breed,
-      ageYears: data.ageYears,
-      ageMonths: data.ageMonths,
+      ageYears: data.dateOfBirth
+        ? Math.floor((Date.now() - new Date(data.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
+        : data.ageYears,
+      ageMonths: data.dateOfBirth
+        ? Math.floor(((Date.now() - new Date(data.dateOfBirth).getTime()) / (30.44 * 24 * 60 * 60 * 1000)) % 12)
+        : data.ageMonths,
       temperament: data.temperament,
       energyLevel: data.energyLevel,
       photoUrl: data.petPhoto,
+      gender: data.gender,
+      dateOfBirth: data.dateOfBirth,
+      weightKg: data.weightKg,
+      lifestyle: data.lifestyle,
+      isNeutered: data.isNeutered,
     } as any);
     clearData();
     navigate("/owner/dashboard");

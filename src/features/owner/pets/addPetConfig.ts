@@ -1,40 +1,29 @@
 import type { StepConfig } from "@/hooks/useMultiStepForm";
 import {
   ownerPetTypeSchema,
-  ownerPetDetailsSchema,
+  ownerBreedSchema,
+  ownerBasicsSchema,
+  ownerLifestyleSchema,
+  ownerVaccinationSchema,
   ownerTemperamentSchema,
 } from "../onboarding/schemas";
 
 export const ADD_PET_STEPS: StepConfig[] = [
-  {
-    id: "pet-type",
-    path: "pet-type",
-    schema: ownerPetTypeSchema,
-    fields: ["petType", "customType"],
-  },
-  {
-    id: "pet-details",
-    path: "pet-details",
-    schema: ownerPetDetailsSchema,
-    fields: ["petName", "ageYears", "ageMonths", "breed"],
-  },
-  {
-    id: "temperament",
-    path: "temperament",
-    schema: ownerTemperamentSchema,
-    fields: ["temperament", "energyLevel"],
-  },
-  {
-    id: "complete",
-    path: "complete",
-    schema: ownerTemperamentSchema,
-    fields: [],
-  },
+  { id: "pet-type", path: "pet-type", schema: ownerPetTypeSchema, fields: ["petType", "customType"] },
+  { id: "breed", path: "breed", schema: ownerBreedSchema, fields: ["breed"] },
+  { id: "basics", path: "basics", schema: ownerBasicsSchema, fields: ["petName", "gender", "dateOfBirth", "weightKg"] },
+  { id: "lifestyle", path: "lifestyle", schema: ownerLifestyleSchema, fields: ["lifestyle"] },
+  { id: "vaccination", path: "vaccination", schema: ownerVaccinationSchema, fields: ["completedVaccinations", "isNeutered"] },
+  { id: "temperament", path: "temperament", schema: ownerTemperamentSchema, fields: ["temperament", "energyLevel"] },
+  { id: "complete", path: "complete", schema: ownerTemperamentSchema, fields: [] },
 ];
 
 export const ADD_PET_STEP_LABELS = [
   { id: "pet-type", label: "Pet Type" },
-  { id: "pet-details", label: "Pet Details" },
+  { id: "breed", label: "Breed" },
+  { id: "basics", label: "Basics" },
+  { id: "lifestyle", label: "Lifestyle" },
+  { id: "vaccination", label: "Vaccination" },
   { id: "temperament", label: "Temperament" },
   { id: "complete", label: "Complete" },
 ];

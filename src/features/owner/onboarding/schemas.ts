@@ -17,15 +17,37 @@ export const ownerPetTypeSchema = z.object({
 
 export type OwnerPetType = z.infer<typeof ownerPetTypeSchema>;
 
-// Pet Details Step
-export const ownerPetDetailsSchema = z.object({
-  petName: z.string().min(1, "Pet name is required"),
-  ageYears: z.preprocess((v) => (v === "" || Number.isNaN(v) ? undefined : Number(v)), z.number({ required_error: "Age in years is required" }).int().nonnegative()),
-  ageMonths: z.preprocess((v) => (v === "" || Number.isNaN(v) ? undefined : Number(v)), z.number({ required_error: "Age in months is required" }).int().min(0).max(11)),
-  breed: z.string().optional(),
+// Breed Step
+export const ownerBreedSchema = z.object({
+  breed: z.string().min(1, "Please select a breed"),
 });
 
-export type OwnerPetDetails = z.infer<typeof ownerPetDetailsSchema>;
+export type OwnerBreed = z.infer<typeof ownerBreedSchema>;
+
+// Basics Step
+export const ownerBasicsSchema = z.object({
+  petName: z.string().min(1, "Pet name is required"),
+  gender: z.enum(["male", "female"], { required_error: "Please select gender" }),
+  dateOfBirth: z.string().min(1, "Date of birth is required"),
+  weightKg: z.preprocess((v) => (v === "" || Number.isNaN(v) ? undefined : Number(v)), z.number().positive("Weight must be positive").optional()),
+});
+
+export type OwnerBasics = z.infer<typeof ownerBasicsSchema>;
+
+// Lifestyle Step
+export const ownerLifestyleSchema = z.object({
+  lifestyle: z.enum(["indoor", "outdoor"], { required_error: "Please select lifestyle" }),
+});
+
+export type OwnerLifestyle = z.infer<typeof ownerLifestyleSchema>;
+
+// Vaccination Step
+export const ownerVaccinationSchema = z.object({
+  completedVaccinations: z.array(z.string()).default([]),
+  isNeutered: z.boolean().default(false),
+});
+
+export type OwnerVaccination = z.infer<typeof ownerVaccinationSchema>;
 
 // Temperament & Energy Step
 export const ownerTemperamentSchema = z.object({
@@ -38,14 +60,10 @@ export type OwnerTemperament = z.infer<typeof ownerTemperamentSchema>;
 // Combined onboarding form type
 export const ownerOnboardingSchema = ownerAboutYouSchema
   .merge(ownerPetTypeSchema)
-  .merge(ownerPetDetailsSchema)
-  .merge(ownerTemperamentSchema)
-  .refine(
-    (data) => data.petType !== "other" || !!data.customType,
-    {
-      message: "Custom pet type is required when selecting 'Other'",
-      path: ["customType"],
-    }
-  );
+  .merge(ownerBreedSchema)
+  .merge(ownerBasicsSchema)
+  .merge(ownerLifestyleSchema)
+  .merge(ownerVaccinationSchema)
+  .merge(ownerTemperamentSchema);
 
 export type OwnerOnboarding = z.infer<typeof ownerOnboardingSchema>;

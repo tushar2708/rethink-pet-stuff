@@ -28,8 +28,16 @@ export async function createPet(ownerId: string, data: CreatePetInput) {
       temperament: toDbTemperament(data.temperament),
       energyLevel: data.energyLevel as EnergyLevel,
       photoUrl: data.photoUrl,
+      gender: data.gender,
+      dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
+      weightKg: data.weightKg,
+      lifestyle: data.lifestyle,
+      isNeutered: data.isNeutered ?? false,
     },
   });
+
+  const { generateHealthPlan } = await import("./healthService");
+  await generateHealthPlan(pet.id);
 
   return sanitizePet(pet);
 }
@@ -80,6 +88,11 @@ export async function updatePet(id: string, ownerId: string, data: UpdatePetInpu
         ? { energyLevel: data.energyLevel as EnergyLevel }
         : {}),
       ...(data.photoUrl !== undefined ? { photoUrl: data.photoUrl } : {}),
+      ...(data.gender !== undefined ? { gender: data.gender } : {}),
+      ...(data.dateOfBirth !== undefined ? { dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null } : {}),
+      ...(data.weightKg !== undefined ? { weightKg: data.weightKg } : {}),
+      ...(data.lifestyle !== undefined ? { lifestyle: data.lifestyle } : {}),
+      ...(data.isNeutered !== undefined ? { isNeutered: data.isNeutered } : {}),
     },
   });
 
@@ -119,11 +132,26 @@ export async function ownerOnboard(userId: string, data: OwnerOnboardingInput) {
         temperament: toDbTemperament(data.temperament),
         energyLevel: data.energyLevel as EnergyLevel,
         photoUrl: data.petPhoto,
+        gender: data.gender,
+        dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
+        weightKg: data.weightKg,
+        lifestyle: data.lifestyle,
+        isNeutered: data.isNeutered ?? false,
       },
     });
 
     return { user, pet };
   });
+
+  const { generateHealthPlan } = await import("./healthService");
+  await generateHealthPlan(result.pet.id);
+
+  if (data.completedVaccinations && data.completedVaccinations.length > 0) {
+    await prisma.petPreventiveCare.updateMany({
+      where: { petId: result.pet.id, templateId: { in: data.completedVaccinations } },
+      data: { status: "done", datePerformed: new Date() },
+    });
+  }
 
   const { passwordHash, ...sanitizedUser } = result.user;
 

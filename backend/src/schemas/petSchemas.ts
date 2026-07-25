@@ -11,6 +11,11 @@ const petBaseSchema = z.object({
   temperament: z.enum(["calm", "needs-warming-up"]),
   energyLevel: z.enum(["low", "medium", "high"]),
   photoUrl: base64Schema,
+  gender: z.enum(["male", "female"]).nullish(),
+  dateOfBirth: z.string().datetime().nullish(),
+  weightKg: z.number().positive().nullish(),
+  lifestyle: z.enum(["indoor", "outdoor"]).nullish(),
+  isNeutered: z.boolean().default(false),
 });
 
 export const createPetSchema = petBaseSchema.refine(
@@ -42,6 +47,12 @@ export const ownerOnboardingSchema = z
     temperament: z.enum(["calm", "needs-warming-up"]),
     energyLevel: z.enum(["low", "medium", "high"]),
     petPhoto: base64Schema,
+    gender: z.enum(["male", "female"]).nullish(),
+    dateOfBirth: z.string().datetime().nullish(),
+    weightKg: z.number().positive().nullish(),
+    lifestyle: z.enum(["indoor", "outdoor"]).nullish(),
+    isNeutered: z.boolean().default(false),
+    completedVaccinations: z.array(z.string().uuid()).default([]),
   })
   .refine((data) => data.petType !== "other" || !!data.customType, {
     message: "Custom pet type required when 'Other' selected",

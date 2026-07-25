@@ -8,6 +8,12 @@ export interface AddPetData {
   ageYears: number | undefined;
   ageMonths: number | undefined;
   breed: string;
+  gender: string;
+  dateOfBirth: string;
+  weightKg: number | undefined;
+  lifestyle: string;
+  isNeutered: boolean;
+  completedVaccinations: string[];
   temperament: string;
   energyLevel: string;
   petPhoto: string;

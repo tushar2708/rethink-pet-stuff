@@ -12,9 +12,12 @@ import { GIG_STEP_LABELS } from "@/features/gig/onboarding/config";
 import { LandingPage } from "@/features/landing/LandingPage";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { OwnerPetType } from "@/features/owner/onboarding/steps/OwnerPetType";
-import { OwnerPetDetails } from "@/features/owner/onboarding/steps/OwnerPetDetails";
 import { OwnerTemperament } from "@/features/owner/onboarding/steps/OwnerTemperament";
 import { OwnerComplete } from "@/features/owner/onboarding/steps/OwnerComplete";
+import { OwnerBreed } from "@/features/owner/onboarding/steps/OwnerBreed";
+import { OwnerBasics } from "@/features/owner/onboarding/steps/OwnerBasics";
+import { OwnerLifestyle } from "@/features/owner/onboarding/steps/OwnerLifestyle";
+import { OwnerVaccination } from "@/features/owner/onboarding/steps/OwnerVaccination";
 import {
   VetCredentials,
   VetClinic,
@@ -30,11 +33,16 @@ import { GigConsent } from "@/features/gig/onboarding/steps/GigConsent";
 import { GigComplete } from "@/features/gig/onboarding/steps/GigComplete";
 import { OwnerDashboard } from "@/features/owner/dashboard/OwnerDashboard";
 import { AddPetType } from "@/features/owner/pets/steps/AddPetType";
-import { AddPetDetails } from "@/features/owner/pets/steps/AddPetDetails";
+import { AddPetBreed } from "@/features/owner/pets/steps/AddPetBreed";
+import { AddPetBasics } from "@/features/owner/pets/steps/AddPetBasics";
+import { AddPetLifestyle } from "@/features/owner/pets/steps/AddPetLifestyle";
+import { AddPetVaccination } from "@/features/owner/pets/steps/AddPetVaccination";
 import { AddPetTemperament } from "@/features/owner/pets/steps/AddPetTemperament";
 import { AddPetComplete } from "@/features/owner/pets/steps/AddPetComplete";
 import { PetDetailPage } from "@/features/owner/pets/PetDetailPage";
 import { PetEditPage } from "@/features/owner/pets/PetEditPage";
+import { PetHealthTimeline } from "@/features/owner/pets/PetHealthTimeline";
+import { PetMedicalHistory } from "@/features/owner/pets/PetMedicalHistory";
 import { FindVetPage } from "@/features/owner/find/FindVetPage";
 import { VetProfilePage as OwnerVetProfilePage } from "@/features/owner/find/VetProfilePage";
 import { FindWorkerPage } from "@/features/owner/find/FindWorkerPage";
@@ -112,9 +120,11 @@ export const router = createBrowserRouter([
             element: <OnboardingLayout portal="owner" steps={OWNER_STEP_LABELS} />,
             children: [
               { index: true, element: <Navigate to="pet-type" replace /> },
-              { path: "about-you", element: <Navigate to="/owner/onboarding/pet-type" replace /> },
               { path: "pet-type", element: <OwnerPetType /> },
-              { path: "pet-details", element: <OwnerPetDetails /> },
+              { path: "breed", element: <OwnerBreed /> },
+              { path: "basics", element: <OwnerBasics /> },
+              { path: "lifestyle", element: <OwnerLifestyle /> },
+              { path: "vaccination", element: <OwnerVaccination /> },
               { path: "temperament", element: <OwnerTemperament /> },
               { path: "complete", element: <OwnerComplete /> },
             ],
@@ -134,12 +144,17 @@ export const router = createBrowserRouter([
                 children: [
                   { index: true, element: <Navigate to="pet-type" replace /> },
                   { path: "pet-type", element: <AddPetType /> },
-                  { path: "pet-details", element: <AddPetDetails /> },
+                  { path: "breed", element: <AddPetBreed /> },
+                  { path: "basics", element: <AddPetBasics /> },
+                  { path: "lifestyle", element: <AddPetLifestyle /> },
+                  { path: "vaccination", element: <AddPetVaccination /> },
                   { path: "temperament", element: <AddPetTemperament /> },
                   { path: "complete", element: <AddPetComplete /> },
                 ],
               },
               { path: "pets/:petId", element: <PetDetailPage /> },
+              { path: "pets/:petId/health", element: <PetHealthTimeline /> },
+              { path: "pets/:petId/medical", element: <PetMedicalHistory /> },
               { path: "pets/:petId/edit", element: <PetEditPage /> },
               { path: "find-vet", element: <FindVetPage /> },
               { path: "find-vet/:vetId", element: <OwnerVetProfilePage /> },

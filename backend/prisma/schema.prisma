@@ -117,6 +117,8 @@ model User {
   providedAppointments Appointment[] @relation("ProviderAppointments")
   reviewsGiven     Review[] @relation("ReviewsGiven")
   reviewsReceived  Review[] @relation("ReviewsReceived")
+  preventiveCarePerformed  PetPreventiveCare[] @relation("PreventiveCareVet")
+  medicalEventsPerformed   PetMedicalEvent[]   @relation("MedicalEventVet")
 
   @@map("users")
 }
@@ -132,12 +134,19 @@ model Pet {
   ageMonths    Int?
   temperament  Temperament
   energyLevel  EnergyLevel
+  gender        String?
+  dateOfBirth   DateTime?
+  weightKg      Decimal?    @db.Decimal(5, 2)
+  lifestyle     String?
+  isNeutered    Boolean     @default(false)
   photoUrl     String?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
   owner        User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   appointments Appointment[]
+  preventiveCare  PetPreventiveCare[]
+  medicalEvents   PetMedicalEvent[]
 
   @@map("pets")
 }
@@ -293,4 +302,78 @@ model Review {
 
   @@unique([appointmentId, reviewerId])
   @@map("reviews")
+}
+
+model BreedCatalog {
+  id        String  @id @default(uuid()) @db.Uuid
+  petType   PetType
+  name      String
+  isCommon  Boolean @default(false)
+  sortOrder Int     @default(0)
+
+  @@unique([petType, name])
+  @@map("breed_catalog")
+}
+
+model HealthPlanTemplate {
+  id                    String  @id @default(uuid()) @db.Uuid
+  petType               PetType
+  breedGroup            String?
+  name                  String
+  category              String
+  triggerType            String
+  triggerCondition      Json    @db.JsonB
+  lifeStage             String
+  recommendedAgeWeeks   Int?
+  repeatIntervalWeeks   Int?
+  description           String?
+  sortOrder             Int     @default(0)
+
+  preventiveCare        PetPreventiveCare[]
+
+  @@map("health_plan_templates")
+}
+
+model PetPreventiveCare {
+  id              String    @id @default(uuid()) @db.Uuid
+  petId           String    @db.Uuid
+  templateId      String?   @db.Uuid
+  name            String
+  careType        String
+  status          String    @default("scheduled")
+  dateDue         DateTime?
+  datePerformed   DateTime?
+  veterinarianId  String?   @db.Uuid
+  details         Json?     @db.JsonB
+  documentUrl     String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  pet             Pet       @relation(fields: [petId], references: [id], onDelete: Cascade)
+  template        HealthPlanTemplate? @relation(fields: [templateId], references: [id])
+  veterinarian    User?     @relation("PreventiveCareVet", fields: [veterinarianId], references: [id])
+
+  @@map("pet_preventive_care")
+}
+
+model PetMedicalEvent {
+  id              String    @id @default(uuid()) @db.Uuid
+  petId           String    @db.Uuid
+  eventType       String
+  name            String
+  dateOccurred    DateTime?
+  dateResolved    DateTime?
+  veterinarianId  String?   @db.Uuid
+  severity        String?
+  outcome         String?
+  details         Json?     @db.JsonB
+  documentUrl     String?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  pet             Pet       @relation(fields: [petId], references: [id], onDelete: Cascade)
+  veterinarian    User?     @relation("MedicalEventVet", fields: [veterinarianId], references: [id])
+
+  @@map("pet_medical_events")
 }

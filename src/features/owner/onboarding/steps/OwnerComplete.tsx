@@ -67,7 +67,7 @@ export function OwnerComplete() {
                   {PET_TYPE_LABELS[data.petType as string] || data.customType}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Age: {data.ageYears ?? 0} years, {data.ageMonths ?? 0} months
+                  Age: {Number(data.ageYears) || 0} years, {Number(data.ageMonths) || 0} months
                 </p>
                 {data.temperament && (
                   <p className="text-xs text-muted-foreground">
@@ -77,6 +77,29 @@ export function OwnerComplete() {
                 {data.energyLevel && (
                   <p className="text-xs text-muted-foreground">
                     Energy: {data.energyLevel.charAt(0).toUpperCase() + data.energyLevel.slice(1)}
+                  </p>
+                )}
+                {data.gender && (
+                  <p className="text-xs text-muted-foreground">
+                    Gender: {data.gender === "male" ? "Male" : "Female"}
+                  </p>
+                )}
+                {data.weightKg && (
+                  <p className="text-xs text-muted-foreground">
+                    Weight: {data.weightKg} kg
+                  </p>
+                )}
+                {data.lifestyle && (
+                  <p className="text-xs text-muted-foreground">
+                    Lifestyle: {data.lifestyle === "indoor" ? "Indoor only" : "Goes outdoors"}
+                  </p>
+                )}
+                {data.isNeutered && (
+                  <p className="text-xs text-muted-foreground">Neutered ✓</p>
+                )}
+                {data.completedVaccinations && data.completedVaccinations.length > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    {data.completedVaccinations.length} vaccination(s) marked as done
                   </p>
                 )}
               </div>

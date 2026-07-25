@@ -1,18 +1,14 @@
 import type { StepConfig } from "@/hooks/useMultiStepForm";
 import {
-  ownerAboutYouSchema,
   ownerPetTypeSchema,
-  ownerPetDetailsSchema,
+  ownerBreedSchema,
+  ownerBasicsSchema,
+  ownerLifestyleSchema,
+  ownerVaccinationSchema,
   ownerTemperamentSchema,
 } from "./schemas";
 
 export const OWNER_STEPS: StepConfig[] = [
-  {
-    id: "about-you",
-    path: "about-you",
-    schema: ownerAboutYouSchema,
-    fields: ["name", "email", "phone"],
-  },
   {
     id: "pet-type",
     path: "pet-type",
@@ -20,10 +16,28 @@ export const OWNER_STEPS: StepConfig[] = [
     fields: ["petType", "customType"],
   },
   {
-    id: "pet-details",
-    path: "pet-details",
-    schema: ownerPetDetailsSchema,
-    fields: ["petName", "ageYears", "ageMonths", "breed"],
+    id: "breed",
+    path: "breed",
+    schema: ownerBreedSchema,
+    fields: ["breed"],
+  },
+  {
+    id: "basics",
+    path: "basics",
+    schema: ownerBasicsSchema,
+    fields: ["petName", "gender", "dateOfBirth", "weightKg"],
+  },
+  {
+    id: "lifestyle",
+    path: "lifestyle",
+    schema: ownerLifestyleSchema,
+    fields: ["lifestyle"],
+  },
+  {
+    id: "vaccination",
+    path: "vaccination",
+    schema: ownerVaccinationSchema,
+    fields: ["completedVaccinations", "isNeutered"],
   },
   {
     id: "temperament",
@@ -41,7 +55,10 @@ export const OWNER_STEPS: StepConfig[] = [
 
 export const OWNER_STEP_LABELS = [
   { id: "pet-type", label: "Pet Type" },
-  { id: "pet-details", label: "Pet Details" },
+  { id: "breed", label: "Breed" },
+  { id: "basics", label: "Basics" },
+  { id: "lifestyle", label: "Lifestyle" },
+  { id: "vaccination", label: "Vaccination" },
   { id: "temperament", label: "Temperament" },
   { id: "complete", label: "Complete" },
 ];

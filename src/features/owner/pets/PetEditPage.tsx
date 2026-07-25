@@ -4,8 +4,11 @@ import { ArrowLeft, Dog, Cat, Bird, Rabbit, HelpCircle, Heart, Shield } from "lu
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 import { usePet, useUpdatePet } from "@/hooks/usePets";
 import { useNavigate, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { apiFetch } from "@/lib/api";
 import { cn } from "@/lib/cn";
 import { fileToBase64 } from "@/lib/photo";
 import type { LucideIcon } from "lucide-react";
@@ -34,6 +37,12 @@ export function PetEditPage() {
 
   const temperament = form.watch("temperament");
   const energyLevel = form.watch("energyLevel");
+
+  const { data: breeds } = useQuery({
+    queryKey: ["breeds", pet?.type],
+    queryFn: () => apiFetch<any[]>(`/breeds?petType=${pet?.type}`),
+    enabled: !!pet?.type,
+  });
 
   const handlePhotoChange = async (file: File | null) => {
     if (file) {
@@ -105,7 +114,14 @@ export function PetEditPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="mb-1 block text-sm font-medium text-foreground">Breed</label>
-                <Input placeholder="e.g., Golden Retriever" {...form.register("breed")} />
+                <select {...form.register("breed")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+                  <option value="">Select a breed</option>
+                  {breeds?.map((breed) => (
+                    <option key={breed.id} value={breed.name}>
+                      {breed.name}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium text-foreground">Type</label>
@@ -114,6 +130,37 @@ export function PetEditPage() {
                   <span className="text-sm capitalize">{pet.type}</span>
                 </div>
               </div>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium">Gender</label>
+              <div className="grid grid-cols-2 gap-2">
+                <Button type="button" variant={form.watch("gender") === "male" ? "default" : "outline"} onClick={() => form.setValue("gender", "male")}>Male</Button>
+                <Button type="button" variant={form.watch("gender") === "female" ? "default" : "outline"} onClick={() => form.setValue("gender", "female")}>Female</Button>
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-foreground">Date of Birth</label>
+              <Input type="date" {...form.register("dateOfBirth")} />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-foreground">Weight</label>
+              <Input type="number" step="0.1" min={0} placeholder="kg" {...form.register("weightKg", { valueAsNumber: true })} />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium">Lifestyle</label>
+              <div className="grid grid-cols-2 gap-2">
+                <Button type="button" variant={form.watch("lifestyle") === "indoor" ? "default" : "outline"} onClick={() => form.setValue("lifestyle", "indoor")}>Indoor only</Button>
+                <Button type="button" variant={form.watch("lifestyle") === "outdoor" ? "default" : "outline"} onClick={() => form.setValue("lifestyle", "outdoor")}>Goes outdoors</Button>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Switch checked={form.watch("isNeutered")} onCheckedChange={(v) => form.setValue("isNeutered", v)} />
+              <label className="text-sm font-medium">Neutered / Spayed</label>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
