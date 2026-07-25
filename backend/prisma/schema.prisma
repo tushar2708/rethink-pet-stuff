@@ -1,0 +1,275 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  owner
+  vet
+  gig
+}
+
+enum PetType {
+  dog
+  cat
+  bird
+  hamster
+  other
+}
+
+enum Temperament {
+  calm
+  needs_warming_up
+}
+
+enum EnergyLevel {
+  low
+  medium
+  high
+}
+
+enum VetDegree {
+  DVM
+  VMD
+  BVSc
+  other
+}
+
+enum VetSpecializationType {
+  general
+  surgery
+  dermatology
+  dentistry
+  oncology
+  exotic
+  emergency
+  behavioral
+  nutrition
+  cardiology
+  ophthalmology
+  orthopedics
+}
+
+enum DayOfWeek {
+  mon
+  tue
+  wed
+  thu
+  fri
+  sat
+  sun
+}
+
+enum GigServiceType {
+  walking
+  sitting
+  grooming
+  taxi
+  training
+}
+
+enum ExperienceLevel {
+  beginner
+  intermediate
+  expert
+}
+
+enum TimePref {
+  morning
+  afternoon
+  evening
+  flexible
+}
+
+enum AppointmentStatus {
+  pending
+  confirmed
+  in_progress
+  completed
+  cancelled
+}
+
+enum ProviderType {
+  vet
+  gig
+}
+
+model User {
+  id                 String    @id @default(uuid()) @db.Uuid
+  email              String    @unique
+  name               String
+  phone              String
+  passwordHash       String
+  role               UserRole
+  avatarUrl          String?
+  onboardingComplete Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  pets               Pet[]
+  vetProfile         VetProfile?
+  gigProfile         GigWorkerProfile?
+  ownedAppointments  Appointment[]  @relation("OwnerAppointments")
+  providedAppointments Appointment[] @relation("ProviderAppointments")
+
+  @@map("users")
+}
+
+model Pet {
+  id           String      @id @default(uuid()) @db.Uuid
+  ownerId      String      @db.Uuid
+  name         String
+  type         PetType
+  customType   String?
+  breed        String?
+  ageYears     Int?
+  ageMonths    Int?
+  temperament  Temperament
+  energyLevel  EnergyLevel
+  photoUrl     String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  owner        User        @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+
+  @@map("pets")
+}
+
+model VetProfile {
+  id                    String              @id @default(uuid()) @db.Uuid
+  userId                String              @unique @db.Uuid
+  useDrPrefix           Boolean             @default(false)
+  licenseNumber         String
+  issuingAuthority      String
+  yearsOfPractice       Int
+  degree                VetDegree
+  licenseDocUrl         String?
+  bio                   String              @db.VarChar(300)
+  photoUrl              String?
+  consultationDuration  Int
+  rating                Float?
+  reviewCount           Int                 @default(0)
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  user                  User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clinics               Clinic[]
+  specializations       VetSpecialization[]
+  schedules             Schedule[]
+
+  @@map("vet_profiles")
+}
+
+model Clinic {
+  id            String     @id @default(uuid()) @db.Uuid
+  vetProfileId  String     @db.Uuid
+  name          String
+  street        String
+  city          String
+  state         String     @db.VarChar(2)
+  zip           String
+  phone         String
+  website       String?
+  logoUrl       String?
+
+  vetProfile    VetProfile @relation(fields: [vetProfileId], references: [id], onDelete: Cascade)
+
+  @@map("clinics")
+}
+
+model VetSpecialization {
+  vetProfileId    String               @db.Uuid
+  specialization  VetSpecializationType
+
+  vetProfile      VetProfile           @relation(fields: [vetProfileId], references: [id], onDelete: Cascade)
+
+  @@id([vetProfileId, specialization])
+  @@map("vet_specializations")
+}
+
+model Schedule {
+  id            String     @id @default(uuid()) @db.Uuid
+  vetProfileId  String?    @db.Uuid
+  gigProfileId  String?    @db.Uuid
+  day           DayOfWeek
+  enabled       Boolean    @default(true)
+  slots         Json
+
+  vetProfile    VetProfile?       @relation(fields: [vetProfileId], references: [id], onDelete: Cascade)
+  gigProfile    GigWorkerProfile? @relation(fields: [gigProfileId], references: [id], onDelete: Cascade)
+
+  @@map("schedules")
+}
+
+model GigWorkerProfile {
+  id                      String       @id @default(uuid()) @db.Uuid
+  userId                  String       @unique @db.Uuid
+  firstName               String
+  bio                     String       @db.VarChar(200)
+  hasPets                 Boolean      @default(false)
+  petDetails              String?
+  backgroundCheckConsent  Boolean      @default(false)
+  coverageZip             String
+  coverageRadiusMiles     Int
+  photoUrl                String?
+  rating                  Float?
+  reviewCount             Int          @default(0)
+  badges                  String[]     @default([])
+  createdAt               DateTime     @default(now())
+  updatedAt               DateTime     @updatedAt
+
+  user                    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  services                GigService[]
+  timePreferences         GigTimePreference[]
+  schedules               Schedule[]
+
+  @@map("gig_worker_profiles")
+}
+
+model GigService {
+  id              String          @id @default(uuid()) @db.Uuid
+  gigProfileId    String          @db.Uuid
+  type            GigServiceType
+  experienceLevel ExperienceLevel
+  hourlyRate      Decimal         @db.Decimal(10, 2)
+
+  gigProfile      GigWorkerProfile @relation(fields: [gigProfileId], references: [id], onDelete: Cascade)
+
+  @@map("gig_services")
+}
+
+model GigTimePreference {
+  gigProfileId  String   @db.Uuid
+  preference    TimePref
+
+  gigProfile    GigWorkerProfile @relation(fields: [gigProfileId], references: [id], onDelete: Cascade)
+
+  @@id([gigProfileId, preference])
+  @@map("gig_time_preferences")
+}
+
+model Appointment {
+  id              String            @id @default(uuid()) @db.Uuid
+  petId           String            @db.Uuid
+  ownerId         String            @db.Uuid
+  providerId      String            @db.Uuid
+  providerType    ProviderType
+  serviceType     String
+  status          AppointmentStatus @default(pending)
+  scheduledAt     DateTime
+  durationMinutes Int
+  notes           String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  pet             Pet               @relation(fields: [petId], references: [id])
+  owner           User              @relation("OwnerAppointments", fields: [ownerId], references: [id])
+  provider        User              @relation("ProviderAppointments", fields: [providerId], references: [id])
+
+  @@map("appointments")
+}
