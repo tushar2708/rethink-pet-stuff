@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PetStuff — Dashboard (Dark Mode v2 — PetOS style)</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06060e;--bg2:#0c0c1a;--bg3:#111128;--bg4:#161638;--border:#1a1a3e;--border2:#242450;--text:#eef2ff;--text2:#a5b4c8;--text3:#5a6882;--purple:#8b5cf6;--pg:rgba(139,92,246,0.3);--cyan:#06d6a0;--amber:#fbbf24;--rose:#fb7185;--blue:#60a5fa;--green:#22c55e;--red:#ef4444;--r:16px;--rs:10px;--rx:6px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}a{color:inherit;text-decoration:none}
+body::before{content:'';position:fixed;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(139,92,246,0.07) 0%,transparent 70%);pointer-events:none}
+body::after{content:'';position:fixed;bottom:-200px;left:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(6,214,160,0.05) 0%,transparent 70%);pointer-events:none}
+
+/* TOPNAV */
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:12px 32px;background:var(--bg2);border-bottom:1px solid var(--border);position:fixed;top:0;left:0;right:0;z-index:100;height:56px}
+.tn-logo{display:flex;align-items:center;gap:8px}.tn-logo svg{width:28px;height:28px}
+.tn-logo span{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;background:linear-gradient(135deg,var(--purple),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tn-links{display:flex;gap:4px}.tn-links a{padding:8px 16px;border-radius:var(--rs);font-size:13px;font-weight:500;color:var(--text2);transition:all 0.2s}
+.tn-links a:hover{color:var(--text);background:var(--bg3)}.tn-links a.active{color:var(--text);background:var(--bg3);font-weight:600}
+.tn-right{display:flex;align-items:center;gap:16px}
+.tn-icon{width:36px;height:36px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
+.tn-user{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 12px 4px 4px;border-radius:20px;background:var(--bg3)}
+.tn-user img{width:28px;height:28px;border-radius:50%;object-fit:cover}.tn-user span{font-size:13px;font-weight:600}
+
+/* SIDEBAR */
+.sidebar{width:240px;position:fixed;top:56px;left:0;bottom:0;background:var(--bg2);border-right:1px solid var(--border);padding:20px 12px;overflow-y:auto;z-index:50;display:flex;flex-direction:column;gap:4px}
+.ni{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--rs);color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s}
+.ni:hover{background:var(--bg3);color:var(--text)}.ni.active{background:linear-gradient(135deg,rgba(139,92,246,0.15),rgba(6,214,160,0.05));color:var(--text);border:1px solid rgba(139,92,246,0.2)}
+.ni .e{width:20px;text-align:center;font-size:15px}
+.nd{height:1px;background:var(--border);margin:8px 0}
+.np{margin-top:auto;padding:16px;background:linear-gradient(135deg,rgba(139,92,246,0.1),rgba(6,214,160,0.05));border:1px solid rgba(139,92,246,0.2);border-radius:var(--r)}
+.np h4{font-size:13px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px}.np p{font-size:11px;color:var(--text3);margin-bottom:10px}
+.np button{width:100%;padding:8px;background:var(--purple);border:none;border-radius:var(--rs);color:white;font-size:12px;font-weight:700;cursor:pointer}
+
+/* MAIN */.main{margin-left:240px;margin-top:56px;position:relative;z-index:1}
+
+/* HERO */
+.hero{position:relative;padding:40px 32px;background:linear-gradient(135deg,#0d0d2b,#1a0a30 50%,#0a1628);border-bottom:1px solid var(--border);overflow:hidden;min-height:280px}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(139,92,246,0.1),transparent 50%),radial-gradient(ellipse at 20% 80%,rgba(6,214,160,0.06),transparent 50%)}
+.hi{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between}
+.hl{max-width:460px}.hb{display:inline-flex;padding:4px 14px;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);border-radius:20px;font-size:11px;font-weight:700;color:var(--purple);margin-bottom:14px}
+.hero h1{font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:800;line-height:1.15;margin-bottom:10px}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--purple),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:14px;color:var(--text2);margin-bottom:20px;line-height:1.5}
+.hctas{display:flex;gap:10px}
+.bp{display:inline-flex;align-items:center;gap:6px;padding:10px 24px;background:linear-gradient(135deg,var(--purple),#6d28d9);border:none;border-radius:var(--rs);color:white;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px var(--pg)}
+.bo{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:transparent;border:1px solid var(--border);border-radius:var(--rs);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer}
+.hr{position:relative;width:380px}
+.himg{width:300px;height:220px;border-radius:var(--r);object-fit:cover;border:2px solid rgba(139,92,246,0.2);box-shadow:0 16px 48px rgba(0,0,0,0.5)}
+.hpid{position:absolute;top:-10px;right:-20px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px;min-width:180px;box-shadow:0 8px 30px rgba(0,0,0,0.4)}
+.hpid .l{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px}.hpid .id{font-family:monospace;font-size:14px;font-weight:700;color:var(--purple);margin:4px 0}
+.hpid .n{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800}.hpid .br{font-size:11px;color:var(--text2);margin:4px 0 8px}
+.hpid .bdg{display:inline-block;padding:3px 10px;background:rgba(34,197,94,0.15);color:var(--green);border-radius:10px;font-size:10px;font-weight:700}
+.htrust{display:flex;align-items:center;gap:8px;margin-top:16px;font-size:11px;color:var(--text3)}.htrust .av{display:flex}.htrust .av img{width:22px;height:22px;border-radius:50%;border:2px solid var(--bg);margin-left:-6px;object-fit:cover}
+.htrust .av img:first-child{margin-left:0}.htrust .st{color:var(--amber)}
+
+/* CONTENT */.ct{padding:28px 32px}
+
+/* SEC HEAD */.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.st2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700}.sl{font-size:12px;color:var(--purple);display:flex;align-items:center;gap:4px}
+
+/* PETS ROW */.pr{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;margin-bottom:28px}
+.pc{min-width:150px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center;cursor:pointer;transition:all 0.3s;position:relative}
+.pc:hover{border-color:rgba(139,92,246,0.4);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.pc .h{position:absolute;top:8px;right:8px;display:flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.25)}
+.pc img{width:72px;height:72px;border-radius:50%;object-fit:cover;margin-bottom:8px;border:3px solid var(--border2)}
+.pc .nm{font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:4px}.pc .nm .v{color:var(--blue);font-size:12px}
+.pc .brd{font-size:10px;color:var(--text3);margin:2px 0 4px}.pc .pid{font-size:9px;color:var(--text3);font-family:monospace;background:var(--bg);padding:2px 6px;border-radius:4px}
+.pa{min-width:150px;border:2px dashed var(--border);border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;color:var(--text3);font-size:12px;font-weight:600;transition:all 0.3s}
+.pa:hover{border-color:var(--purple);color:var(--purple)}.pa .pl{width:36px;height:36px;border-radius:50%;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:18px}
+
+/* STATS */.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.sc{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:18px;transition:border-color 0.3s}.sc:hover{border-color:rgba(139,92,246,0.3)}
+.sch{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.si{width:32px;height:32px;border-radius:var(--rx);display:flex;align-items:center;justify-content:center;font-size:16px}
+.si.p{background:rgba(139,92,246,0.12)}.si.r{background:rgba(251,113,133,0.12)}.si.b{background:rgba(96,165,250,0.12)}.si.a{background:rgba(251,191,36,0.12)}
+.scl{font-size:12px;color:var(--text3)}.sv{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:800}.ss{font-size:10px;color:var(--text3);margin-top:2px}
+
+/* 3COL */.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:28px}
+.cd{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.cdt{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;margin-bottom:16px}
+.ti{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}.ti:last-child{border-bottom:none}
+.td{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.td.g{background:var(--green);box-shadow:0 0 6px rgba(34,197,94,0.4)}.td.a{background:var(--amber);box-shadow:0 0 6px rgba(245,158,11,0.4)}.td.r{background:var(--red);box-shadow:0 0 6px rgba(239,68,68,0.4)}
+.tn{font-size:12px;font-weight:600}.tdd{font-size:10px;color:var(--text3)}
+.tb{display:block;width:100%;margin-top:12px;padding:8px;background:transparent;border:1px solid var(--border);border-radius:var(--rs);color:var(--text2);font-size:12px;cursor:pointer;text-align:center}.tb:hover{border-color:var(--purple);color:var(--purple)}
+.dw{display:flex;flex-direction:column;align-items:center}
+.dn{width:140px;height:140px;border-radius:50%;background:conic-gradient(var(--green) 0% 95%,var(--border) 95% 100%);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.di{width:108px;height:108px;border-radius:50%;background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.dv{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:800;color:var(--green)}.dl{font-size:10px;color:var(--text3)}
+.ms{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}.m{display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--bg);border-radius:var(--rx);font-size:11px}
+.m .ml{color:var(--text3)}.m .mv{font-weight:700;margin-left:auto}
+.ap{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:var(--rs);margin-bottom:8px;cursor:pointer;transition:background 0.2s}.ap:hover{background:var(--bg4)}
+.ad{text-align:center;min-width:40px;padding:4px 6px;background:rgba(139,92,246,0.12);border-radius:var(--rx)}.ad .mo{font-size:8px;color:var(--purple);font-weight:700;text-transform:uppercase}.ad .dy{font-size:16px;font-weight:800}
+.ai2{width:28px;height:28px;border-radius:50%;object-fit:cover}.aif{flex:1}.apn{font-size:12px;font-weight:600}.apt{font-size:10px;color:var(--text3)}
+.va{display:flex;align-items:center;gap:8px;padding:10px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.15);border-radius:var(--rs);margin-top:6px;font-size:11px}.va strong{color:var(--amber)}
+
+/* ID CARDS */.ic{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.idc{border-radius:var(--r);padding:20px;position:relative;overflow:hidden;min-height:160px;cursor:pointer;transition:transform 0.3s}.idc:hover{transform:translateY(-3px)}
+.idc.c1{background:linear-gradient(135deg,#2d1b69,#4c1d95)}.idc.c2{background:linear-gradient(135deg,#064e3b,#065f46)}.idc.c3{background:linear-gradient(135deg,#7c2d12,#9a3412)}.idc.c4{background:linear-gradient(135deg,#1e3a5f,#1e40af)}
+.idc .pl2{font-size:9px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px}.idc .pd{font-family:monospace;font-size:16px;font-weight:800;margin:4px 0 12px}
+.idc .pr2{display:flex;align-items:center;gap:10px}.idc .pr2 img{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.2)}
+.idc .pn{font-size:14px;font-weight:700}.idc .pdt{font-size:10px;color:rgba(255,255,255,0.6)}.idc .pi{position:absolute;bottom:12px;right:12px;font-size:20px;opacity:0.3}
+
+/* QACTIONS */.qa{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
+.qai{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center;cursor:pointer;transition:all 0.3s}.qai:hover{border-color:rgba(139,92,246,0.4);transform:translateY(-2px)}
+.qii{width:40px;height:40px;margin:0 auto 8px;background:rgba(139,92,246,0.08);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:18px}
+.qil{font-size:11px;font-weight:600;color:var(--text2)}
+
+/* TRUST */.tr{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-top:1px solid var(--border)}
+.tc{background:var(--bg2);padding:24px 20px;display:flex;align-items:center;gap:12px}
+.tci{width:40px;height:40px;border-radius:50%;background:rgba(139,92,246,0.08);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.tc h4{font-size:12px;font-weight:700;margin-bottom:2px}.tc p{font-size:10px;color:var(--text3)}
+</style>
+</head>
+<body>
+<div class="topnav">
+  <div class="tn-logo"><svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="url(#g)" stroke-width="2"/><circle cx="10" cy="11" r="2" fill="#8b5cf6"/><circle cx="18" cy="11" r="2" fill="#06d6a0"/><path d="M10 18c0-2.2 1.8-4 4-4s4 1.8 4 4" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round"/><defs><linearGradient id="g" x1="0" y1="0" x2="28" y2="28"><stop stop-color="#8b5cf6"/><stop offset="1" stop-color="#06d6a0"/></linearGradient></defs></svg><span>PetStuff</span></div>
+  <div class="tn-links"><a href="#">Home</a><a href="#" class="active">Dashboard</a><a href="#">My Pets</a><a href="#">Health</a><a href="#">Find Vet</a><a href="#">Community</a></div>
+  <div class="tn-right"><div class="tn-icon">🌙</div><div class="tn-icon">🔔</div><div class="tn-user"><img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&h=60&fit=crop" alt=""><span>Tushar ▾</span></div></div>
+</div>
+<aside class="sidebar">
+  <a class="ni active"><span class="e">🏠</span>Dashboard</a><a class="ni"><span class="e">🐾</span>My Pets</a><a class="ni"><span class="e">📋</span>Health Records</a><a class="ni"><span class="e">💉</span>Vaccinations</a><a class="ni"><span class="e">📅</span>Appointments</a><a class="ni"><span class="e">💊</span>Medications</a><a class="ni"><span class="e">📄</span>Documents</a>
+  <div class="nd"></div><a class="ni"><span class="e">📈</span>Growth Tracker</a><a class="ni"><span class="e">🔔</span>Reminders</a><a class="ni"><span class="e">🚨</span>Lost Pet Alert</a><div class="nd"></div><a class="ni"><span class="e">⚙️</span>Settings</a>
+  <div class="np"><h4>👑 PetStuff Premium</h4><p>Unlock advanced features and priority support.</p><button>Upgrade Now</button></div>
+</aside>
+<main class="main">
+  <section class="hero"><div class="hi"><div class="hl"><div class="hb">🐾 One Identity. Lifetime Care.</div><h1>Every Pet Deserves a <em>Digital Identity.</em></h1><p>Create a unique Pet ID and keep all their health records, vaccinations, and important information in one secure place.</p><div class="hctas"><button class="bp">🐾 Register Your Pet</button><button class="bo">🔍 Scan Pet ID</button></div><div class="htrust"><div class="av"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&h=50&fit=crop"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop"><img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=50&h=50&fit=crop"></div>Trusted by 2K+ Pet Parents&nbsp;<span class="st">★★★★★</span>&nbsp;4.9/5</div></div><div class="hr"><img class="himg" src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=500&h=360&fit=crop" alt=""><div class="hpid"><div class="l">Pet ID</div><div class="id">PID-8F4K2X9</div><div class="n">Bruno ✓</div><div class="br">Golden Retriever · Male · 4 Years</div><div class="bdg">Healthy</div></div></div></div></section>
+  <div class="ct">
+    <div class="sh"><h2 class="st2">My Pets</h2><a href="#" class="sl">View All →</a></div>
+    <div class="pr">
+      <div class="pc"><div class="h">❤️ 98%</div><img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop"><div class="nm">Bruno <span class="v">✓</span></div><div class="brd">Golden Retriever</div><div class="pid">PID-8F4K2X9</div></div>
+      <div class="pc"><div class="h">❤️ 96%</div><img src="https://images.unsplash.com/photo-1574158622682-e40e69881006?w=200&h=200&fit=crop"><div class="nm">Milo <span class="v">✓</span></div><div class="brd">Persian Cat</div><div class="pid">PID-C7H3K1L</div></div>
+      <div class="pc"><div class="h">❤️ 94%</div><img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=200&h=200&fit=crop"><div class="nm">Coco <span class="v">✓</span></div><div class="brd">Indie</div><div class="pid">PID-R2B8J7P</div></div>
+      <div class="pc"><div class="h" style="background:rgba(251,191,36,0.1);color:var(--amber);border-color:rgba(251,191,36,0.2)">❤️ 92%</div><img src="https://images.unsplash.com/photo-1615497001839-b0a0eac3274c?w=200&h=200&fit=crop"><div class="nm">Bubbles</div><div class="brd">Goldfish</div><div class="pid">PID-F9G6M2N</div></div>
+      <div class="pa"><div class="pl">+</div>Add New Pet</div>
+    </div>
+    <div class="sh"><h2 class="st2">Overview</h2><select style="background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:5px 10px;border-radius:8px;font-size:11px"><option>This Week</option><option>This Month</option></select></div>
+    <div class="sg">
+      <div class="sc"><div class="sch"><div class="si p">🐾</div><span class="scl">Total Pets</span></div><div class="sv">4</div><div class="ss">View all pets →</div></div>
+      <div class="sc"><div class="sch"><div class="si r">❤️</div><span class="scl">Health Score</span></div><div class="sv" style="color:var(--green)">95%</div><div class="ss">Average</div></div>
+      <div class="sc"><div class="sch"><div class="si b">📅</div><span class="scl">Appointments</span></div><div class="sv">2</div><div class="ss">Upcoming</div></div>
+      <div class="sc"><div class="sch"><div class="si a">🔔</div><span class="scl">Reminders</span></div><div class="sv">5</div><div class="ss">Pending</div></div>
+    </div>
+    <div class="g3">
+      <div class="cd"><div class="cdt">Health Timeline</div><div class="ti"><div class="td g"></div><div><div class="tn">Rabies Vaccination</div><div class="tdd">20 May 2026</div></div></div><div class="ti"><div class="td g"></div><div><div class="tn">Vet Visit</div><div class="tdd">15 Apr 2026</div></div></div><div class="ti"><div class="td g"></div><div><div class="tn">Deworming</div><div class="tdd">12 Mar 2026</div></div></div><div class="ti"><div class="td a"></div><div><div class="tn">Next Check-up</div><div class="tdd">12 Aug 2026</div></div></div><a class="tb" href="#">View Full Timeline →</a></div>
+      <div class="cd"><div class="cdt">Pet Health Score</div><div class="dw"><div class="dn"><div class="di"><div class="dv">95%</div><div class="dl">Excellent</div></div></div><div class="ms"><div class="m"><span>🏃</span><span class="ml">Activity</span><span class="mv">92%</span></div><div class="m"><span>😊</span><span class="ml">Mood</span><span class="mv">94%</span></div><div class="m"><span>🥗</span><span class="ml">Nutrition</span><span class="mv">96%</span></div><div class="m"><span>💧</span><span class="ml">Hydration</span><span class="mv">98%</span></div></div></div></div>
+      <div class="cd"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div class="cdt" style="margin-bottom:0">Upcoming Appointments</div><a href="#" class="sl">View All ›</a></div><div class="ap"><div class="ad"><div class="mo">Jul</div><div class="dy">28</div></div><img class="ai2" src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=60&h=60&fit=crop"><div class="aif"><div class="apn">Bruno</div><div class="apt">General Check-up · 10:30 AM</div></div><span style="color:var(--text3)">›</span></div><div class="ap"><div class="ad"><div class="mo">Aug</div><div class="dy">02</div></div><img class="ai2" src="https://images.unsplash.com/photo-1574158622682-e40e69881006?w=60&h=60&fit=crop"><div class="aif"><div class="apn">Milo</div><div class="apt">Dental Cleaning · 11:00 AM</div></div><span style="color:var(--text3)">›</span></div><div class="va"><span>💉</span><div><strong>Vaccinations Due</strong><br>1 due in next 30 days</div><span style="margin-left:auto;cursor:pointer">›</span></div></div>
+    </div>
+    <div class="sh"><h2 class="st2">Digital Pet ID Cards</h2><a href="#" class="sl">View All →</a></div>
+    <div class="ic">
+      <div class="idc c1"><div class="pl2">Pet ID</div><div class="pd">PID-8F4K2X9</div><div class="pr2"><img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=100&h=100&fit=crop"><div><div class="pn">Bruno</div><div class="pdt">Golden Retriever · Male · 4 Years</div></div></div><div class="pi">🐕</div></div>
+      <div class="idc c2"><div class="pl2">Pet ID</div><div class="pd">PID-C7H3K1L</div><div class="pr2"><img src="https://images.unsplash.com/photo-1574158622682-e40e69881006?w=100&h=100&fit=crop"><div><div class="pn">Milo</div><div class="pdt">Persian Cat · Male · 3 Years</div></div></div><div class="pi">🐈</div></div>
+      <div class="idc c3"><div class="pl2">Pet ID</div><div class="pd">PID-R2B8J7P</div><div class="pr2"><img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=100&h=100&fit=crop"><div><div class="pn">Coco</div><div class="pdt">Indie · Female · 1 Year</div></div></div><div class="pi">🐕</div></div>
+      <div class="idc c4"><div class="pl2">Pet ID</div><div class="pd">PID-F9G6M2N</div><div class="pr2"><img src="https://images.unsplash.com/photo-1615497001839-b0a0eac3274c?w=100&h=100&fit=crop"><div><div class="pn">Bubbles</div><div class="pdt">Goldfish · 1 Year</div></div></div><div class="pi">🐠</div></div>
+    </div>
+    <div class="sh"><h2 class="st2">Quick Actions</h2></div>
+    <div class="qa">
+      <div class="qai"><div class="qii">🔍</div><div class="qil">Scan Pet ID</div></div>
+      <div class="qai"><div class="qii">📋</div><div class="qil">Add Health Record</div></div>
+      <div class="qai"><div class="qii">📅</div><div class="qil">Book Appointment</div></div>
+      <div class="qai"><div class="qii">📤</div><div class="qil">Share Profile</div></div>
+    </div>
+  </div>
+  <div class="tr">
+    <div class="tc"><div class="tci">🔒</div><div><h4>Secure & Private</h4><p>Your pet's data is encrypted and 100% secure.</p></div></div>
+    <div class="tc"><div class="tci">📱</div><div><h4>Easy Access</h4><p>Access records anytime, anywhere.</p></div></div>
+    <div class="tc"><div class="tci">🩺</div><div><h4>Share with Vet</h4><p>Share records securely with your vet.</p></div></div>
+  </div>
+</main>
+</body>
+</html>
