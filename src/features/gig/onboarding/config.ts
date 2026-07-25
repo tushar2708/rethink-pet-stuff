@@ -47,7 +47,6 @@ export const GIG_STEPS: StepConfig[] = [
 ];
 
 export const GIG_STEP_LABELS = [
-  { id: "personal-info", label: "Personal Info" },
   { id: "services", label: "Services" },
   { id: "availability", label: "Availability" },
   { id: "about", label: "About You" },

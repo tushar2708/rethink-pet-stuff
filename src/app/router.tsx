@@ -11,15 +11,11 @@ import { VET_STEP_LABELS } from "@/features/vet/onboarding/config";
 import { GIG_STEP_LABELS } from "@/features/gig/onboarding/config";
 import { LandingPage } from "@/features/landing/LandingPage";
 import { LoginPage } from "@/features/auth/LoginPage";
-import { SignupPage } from "@/features/auth/SignupPage";
-import { RoleSelectPage } from "@/features/auth/RoleSelectPage";
-import { OwnerAboutYou } from "@/features/owner/onboarding/steps/OwnerAboutYou";
 import { OwnerPetType } from "@/features/owner/onboarding/steps/OwnerPetType";
 import { OwnerPetDetails } from "@/features/owner/onboarding/steps/OwnerPetDetails";
 import { OwnerTemperament } from "@/features/owner/onboarding/steps/OwnerTemperament";
 import { OwnerComplete } from "@/features/owner/onboarding/steps/OwnerComplete";
 import {
-  VetPersonalInfo,
   VetCredentials,
   VetClinic,
   VetSpecializations,
@@ -27,7 +23,6 @@ import {
   VetProfileSetup,
   VetComplete,
 } from "@/features/vet/onboarding/steps";
-import { GigPersonalInfo } from "@/features/gig/onboarding/steps/GigPersonalInfo";
 import { GigServices } from "@/features/gig/onboarding/steps/GigServices";
 import { GigAvailability } from "@/features/gig/onboarding/steps/GigAvailability";
 import { GigAbout } from "@/features/gig/onboarding/steps/GigAbout";
@@ -64,6 +59,7 @@ import { GigJobDetail } from "@/features/gig/jobs/GigJobDetail";
 import { GigEarningsPage } from "@/features/gig/earnings/GigEarningsPage";
 import { GigProfilePage } from "@/features/gig/profile/GigProfilePage";
 import { GigSettingsPage } from "@/features/gig/settings/GigSettingsPage";
+import { CreateAccountPage } from "@/features/onboarding/CreateAccountPage";
 
 function ErrorPage() {
   return (
@@ -100,10 +96,11 @@ export const router = createBrowserRouter([
         element: <AuthLayout />,
         children: [
           { path: "login", element: <LoginPage /> },
-          { path: "signup", element: <SignupPage /> },
-          { path: "role-select", element: <RoleSelectPage /> },
         ],
       },
+
+      // === SHARED ONBOARDING ENTRY (signup + role selection) ===
+      { path: "onboarding/create-account", element: <CreateAccountPage /> },
 
       // === OWNER PORTAL ===
       {
@@ -114,8 +111,8 @@ export const router = createBrowserRouter([
             path: "onboarding",
             element: <OnboardingLayout portal="owner" steps={OWNER_STEP_LABELS} />,
             children: [
-              { index: true, element: <Navigate to="about-you" replace /> },
-              { path: "about-you", element: <OwnerAboutYou /> },
+              { index: true, element: <Navigate to="pet-type" replace /> },
+              { path: "about-you", element: <Navigate to="/owner/onboarding/pet-type" replace /> },
               { path: "pet-type", element: <OwnerPetType /> },
               { path: "pet-details", element: <OwnerPetDetails /> },
               { path: "temperament", element: <OwnerTemperament /> },
@@ -166,8 +163,8 @@ export const router = createBrowserRouter([
             path: "onboarding",
             element: <OnboardingLayout portal="vet" steps={VET_STEP_LABELS} />,
             children: [
-              { index: true, element: <Navigate to="personal-info" replace /> },
-              { path: "personal-info", element: <VetPersonalInfo /> },
+              { index: true, element: <Navigate to="credentials" replace /> },
+              { path: "personal-info", element: <Navigate to="/vet/onboarding/credentials" replace /> },
               { path: "credentials", element: <VetCredentials /> },
               { path: "clinic", element: <VetClinic /> },
               { path: "specializations", element: <VetSpecializations /> },
@@ -207,8 +204,8 @@ export const router = createBrowserRouter([
             path: "onboarding",
             element: <OnboardingLayout portal="gig" steps={GIG_STEP_LABELS} />,
             children: [
-              { index: true, element: <Navigate to="personal-info" replace /> },
-              { path: "personal-info", element: <GigPersonalInfo /> },
+              { index: true, element: <Navigate to="services" replace /> },
+              { path: "personal-info", element: <Navigate to="/gig/onboarding/services" replace /> },
               { path: "services", element: <GigServices /> },
               { path: "availability", element: <GigAvailability /> },
               { path: "about", element: <GigAbout /> },

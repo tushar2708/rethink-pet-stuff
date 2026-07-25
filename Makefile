@@ -2,7 +2,8 @@
        build build-frontend build-backend \
        db-generate db-migrate db-migrate-create db-migrate-status db-push db-studio db-reset \
        docker-build docker-run stop kill-port lint lint-frontend lint-backend \
-       typecheck typecheck-frontend typecheck-backend
+       typecheck typecheck-frontend typecheck-backend \
+       deploy deploy-vars deploy-up
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-22s\033[0m %s\n", $$1, $$2}'
@@ -108,3 +109,18 @@ stop: ## Stop backend (3001) then frontend (5173)
 
 kill-port: ## Kill any process on port 3001
 	@lsof -ti :3001 | xargs kill -9 2>/dev/null || true
+
+# ── Railway Deployment ──────────────────────────────────────
+
+deploy: deploy-up deploy-vars ## Full Railway deploy (deploy + push vars)
+
+deploy-vars: ## Push backend/.env vars to Railway
+	@echo "Pushing environment variables to Railway..."
+	railway variables set $$(cat /Users/tushar/Documents/RethinkSystem/PetStuff/backend/.env | grep -v '^#' | grep -v '^$$' | tr '\n' ' ')
+	railway variables set NODE_ENV=production
+	@echo "Done. Verify with: railway variables"
+
+deploy-up: ## Deploy to Railway
+	@echo "Deploying to Railway..."
+	railway up
+	@echo "Deploy triggered. Check status with: railway status"

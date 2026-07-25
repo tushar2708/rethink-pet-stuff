@@ -11,7 +11,7 @@ RUN npm ci
 COPY tsconfig.json tsconfig.app.json tsconfig.node.json vite.config.ts index.html components.json ./
 COPY public/ public/
 COPY src/ src/
-RUN npm run build
+RUN npx vite build
 
 # ── Stage 2: Build backend ──────────────────────────────────
 FROM node:22-alpine AS backend-build

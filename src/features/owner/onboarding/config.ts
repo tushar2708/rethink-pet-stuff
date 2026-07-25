@@ -40,7 +40,6 @@ export const OWNER_STEPS: StepConfig[] = [
 ];
 
 export const OWNER_STEP_LABELS = [
-  { id: "about-you", label: "About You" },
   { id: "pet-type", label: "Pet Type" },
   { id: "pet-details", label: "Pet Details" },
   { id: "temperament", label: "Temperament" },

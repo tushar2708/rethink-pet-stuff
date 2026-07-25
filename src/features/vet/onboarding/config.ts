@@ -54,7 +54,6 @@ export const VET_STEPS: StepConfig[] = [
 ];
 
 export const VET_STEP_LABELS = [
-  { id: "personal-info", label: "Personal Info" },
   { id: "credentials", label: "Credentials" },
   { id: "clinic", label: "Clinic Info" },
   { id: "specializations", label: "Specializations" },
