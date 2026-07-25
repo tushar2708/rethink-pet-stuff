@@ -14,7 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import * as React from "react";
+import { useState, useCallback } from "react";
+import { fileToBase64 } from "@/lib/photo";
 
 const ISSUING_AUTHORITIES = [
   "State Veterinary Board",
@@ -40,7 +41,9 @@ export function VetCredentials() {
     setStepData,
   });
 
-  const handleNext = React.useCallback(async () => {
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  const handleNext = useCallback(async () => {
     await next();
   }, [next]);
 
@@ -159,23 +162,29 @@ export function VetCredentials() {
         </p>
         <FileUpload
           value={form.watch("licenseDocUrl")}
-          onChange={(file) => {
+          onChange={async (file) => {
+            setUploadError(null);
             if (file) {
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                form.setValue("licenseDocUrl", reader.result as string, {
-                  shouldValidate: true,
-                });
-              };
-              reader.readAsDataURL(file);
+              try {
+                const base64 = await fileToBase64(file);
+                form.setValue("licenseDocUrl", base64, { shouldValidate: true });
+                setStepData({ licenseDocUrl: base64 } as any);
+              } catch (err: any) {
+                form.setValue("licenseDocUrl", undefined as any, { shouldValidate: true });
+                setUploadError(err?.message || "Failed to process file");
+              }
             } else {
-              form.setValue("licenseDocUrl", "", { shouldValidate: true });
+              form.setValue("licenseDocUrl", undefined as any, { shouldValidate: true });
+              setStepData({ licenseDocUrl: undefined } as any);
             }
           }}
           accept="image/*,application/pdf"
           shape="square"
           placeholder="Upload license document"
         />
+        {uploadError && (
+          <p className="text-xs text-destructive">{uploadError}</p>
+        )}
       </div>
 
       {/* Helper Text */}

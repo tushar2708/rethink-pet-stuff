@@ -31,7 +31,7 @@ const timeSlotsSchema = z.object({
 });
 
 export const gigAvailabilitySchema = z.object({
-  availableDays: z
+  schedule: z
     .array(
       z.object({
         day: z.enum(["mon", "tue", "wed", "thu", "fri", "sat", "sun"]),

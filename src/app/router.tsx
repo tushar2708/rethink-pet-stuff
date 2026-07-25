@@ -25,8 +25,10 @@ import {
   VetAvailability,
   VetProfileSetup,
   VetComplete,
+  VetPersonalInfo,
 } from "@/features/vet/onboarding/steps";
 import { GigServices } from "@/features/gig/onboarding/steps/GigServices";
+import { GigPersonalInfo } from "@/features/gig/onboarding/steps/GigPersonalInfo";
 import { GigAvailability } from "@/features/gig/onboarding/steps/GigAvailability";
 import { GigAbout } from "@/features/gig/onboarding/steps/GigAbout";
 import { GigConsent } from "@/features/gig/onboarding/steps/GigConsent";
@@ -178,8 +180,8 @@ export const router = createBrowserRouter([
             path: "onboarding",
             element: <OnboardingLayout portal="vet" steps={VET_STEP_LABELS} />,
             children: [
-              { index: true, element: <Navigate to="credentials" replace /> },
-              { path: "personal-info", element: <Navigate to="/vet/onboarding/credentials" replace /> },
+              { index: true, element: <Navigate to="personal-info" replace /> },
+              { path: "personal-info", element: <VetPersonalInfo /> },
               { path: "credentials", element: <VetCredentials /> },
               { path: "clinic", element: <VetClinic /> },
               { path: "specializations", element: <VetSpecializations /> },
@@ -219,8 +221,8 @@ export const router = createBrowserRouter([
             path: "onboarding",
             element: <OnboardingLayout portal="gig" steps={GIG_STEP_LABELS} />,
             children: [
-              { index: true, element: <Navigate to="services" replace /> },
-              { path: "personal-info", element: <Navigate to="/gig/onboarding/services" replace /> },
+              { index: true, element: <Navigate to="personal-info" replace /> },
+              { path: "personal-info", element: <GigPersonalInfo /> },
               { path: "services", element: <GigServices /> },
               { path: "availability", element: <GigAvailability /> },
               { path: "about", element: <GigAbout /> },

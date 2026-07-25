@@ -12,8 +12,8 @@ const petBaseSchema = z.object({
   energyLevel: z.enum(["low", "medium", "high"]),
   photoUrl: base64Schema,
   gender: z.enum(["male", "female"]).nullish(),
-  dateOfBirth: z.string().datetime().nullish(),
-  weightKg: z.number().positive().nullish(),
+  dateOfBirth: z.string().nullish(),
+  weightKg: z.preprocess((v) => (v === "" || v === null || v === undefined ? undefined : Number(v)), z.number().positive().nullish()),
   lifestyle: z.enum(["indoor", "outdoor"]).nullish(),
   isNeutered: z.boolean().default(false),
 });
@@ -48,11 +48,11 @@ export const ownerOnboardingSchema = z
     energyLevel: z.enum(["low", "medium", "high"]),
     petPhoto: base64Schema,
     gender: z.enum(["male", "female"]).nullish(),
-    dateOfBirth: z.string().datetime().nullish(),
-    weightKg: z.number().positive().nullish(),
+    dateOfBirth: z.string().nullish(),
+    weightKg: z.preprocess((v) => (v === "" || v === null || v === undefined ? undefined : Number(v)), z.number().positive().nullish()),
     lifestyle: z.enum(["indoor", "outdoor"]).nullish(),
     isNeutered: z.boolean().default(false),
-    completedVaccinations: z.array(z.string().uuid()).default([]),
+    completedVaccinations: z.array(z.string()).default([]),
   })
   .refine((data) => data.petType !== "other" || !!data.customType, {
     message: "Custom pet type required when 'Other' selected",

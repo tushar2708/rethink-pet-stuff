@@ -56,10 +56,18 @@ export async function getHealthTimeline(petId: string, userId: string) {
     breed: pet.breed ?? undefined,
   });
 
-  const records = await prisma.petPreventiveCare.findMany({
+  let records = await prisma.petPreventiveCare.findMany({
     where: { petId },
     include: { template: true },
   });
+
+  if (records.length === 0) {
+    await generateHealthPlan(petId);
+    records = await prisma.petPreventiveCare.findMany({
+      where: { petId },
+      include: { template: true },
+    });
+  }
 
   const now = new Date();
   const groups: Record<string, any[]> = {};

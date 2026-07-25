@@ -2,24 +2,72 @@ import { StepWrapper } from "@/components/shared/StepWrapper";
 import { useGigOnboardingStore } from "@/stores/gigOnboardingStore";
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
 import { GIG_STEPS } from "@/features/gig/onboarding/config";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { apiFetch } from "@/lib/api";
+import { useAuthStore } from "@/stores/authStore";
 
 export function GigConsent() {
   const { data, setStepData } = useGigOnboardingStore();
-  const { form, next, prev, isFirst, isLast } = useMultiStepForm({
+  const { form, prev, isFirst } = useMultiStepForm({
     steps: GIG_STEPS,
     basePath: "/gig/onboarding",
     storeData: data,
     setStepData,
   });
+  const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const handleSubmit = async () => {
+    const valid = await form.trigger(["backgroundCheckConsent", "termsAccepted"]);
+    if (!valid) return;
+
+    setStepData(form.getValues());
+    const allData = { ...data, ...form.getValues() };
+
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const result = await apiFetch<{ id: string }>("/gig/onboarding", {
+        method: "POST",
+        body: JSON.stringify({
+          firstName: allData.firstName || "",
+          email: allData.email || "",
+          phone: allData.phone || "",
+          services: allData.services || [],
+          schedule: allData.schedule || [],
+          timePreferences: allData.timePreferences || [],
+          coverageZip: allData.coverageZip || "",
+          coverageRadiusMiles: Number(allData.coverageRadiusMiles) || 5,
+          bio: allData.bio || "",
+          hasPets: allData.hasPets ?? false,
+          petDetails: allData.petDetails,
+          backgroundCheckConsent: true,
+          photoUrl: allData.photoUrl,
+        }),
+      });
+      if ((result as any)?.id) {
+        useAuthStore.getState().setGigProfileId((result as any).id);
+      }
+      navigate("/gig/onboarding/complete");
+    } catch (err: any) {
+      setSubmitError(err?.message || "Failed to save. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <StepWrapper
       title="One last thing"
       description="We need your consent before you start getting jobs"
-      onNext={() => void next()}
+      onNext={handleSubmit}
       onPrev={prev}
       isFirst={isFirst}
-      isLast={isLast}
+      isLast={true}
+      nextLabel={submitting ? "Saving..." : "Submit"}
+      nextDisabled={submitting}
     >
       <div className="space-y-4">
         <label className="flex items-start gap-3 rounded-lg border p-4">
@@ -50,6 +98,11 @@ export function GigConsent() {
           </div>
         </label>
       </div>
+      {submitError && (
+        <div className="rounded-lg bg-destructive/10 p-3">
+          <p className="text-sm text-destructive">{submitError}</p>
+        </div>
+      )}
     </StepWrapper>
   );
 }

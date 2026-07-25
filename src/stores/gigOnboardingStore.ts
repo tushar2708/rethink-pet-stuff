@@ -16,7 +16,6 @@ export interface GigOnboardingData {
   // Step 2: Services
   services: ServiceOffering[];
   // Step 3: Availability & Coverage
-  availableDays: string[];
   timePreferences: string[];
   schedule: DaySchedule[];
   coverageZip: string;

@@ -58,6 +58,9 @@ export function AddPetBasics() {
             {...form.register("petName")}
             className="w-full"
           />
+          {form.formState.errors.petName && (
+            <p className="text-xs text-destructive">{form.formState.errors.petName.message}</p>
+          )}
         </div>
 
         {/* Gender */}
@@ -66,7 +69,7 @@ export function AddPetBasics() {
           <div className="flex gap-3">
             <Button
               type="button"
-              onClick={() => form.setValue("gender", "male")}
+              onClick={() => form.setValue("gender", "male", { shouldValidate: true })}
               className={cn(
                 "flex-1",
                 selectedGender === "male"
@@ -78,7 +81,7 @@ export function AddPetBasics() {
             </Button>
             <Button
               type="button"
-              onClick={() => form.setValue("gender", "female")}
+              onClick={() => form.setValue("gender", "female", { shouldValidate: true })}
               className={cn(
                 "flex-1",
                 selectedGender === "female"
@@ -89,6 +92,9 @@ export function AddPetBasics() {
               Female
             </Button>
           </div>
+          {form.formState.errors.gender && (
+            <p className="text-xs text-destructive">{form.formState.errors.gender.message}</p>
+          )}
         </div>
 
         {/* Date of Birth */}

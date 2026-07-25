@@ -1,8 +1,6 @@
 "use client";
 
 import { useVetOnboardingStore } from "@/stores/vetOnboardingStore";
-import { useMultiStepForm } from "@/hooks/useMultiStepForm";
-import { VET_STEPS } from "@/features/vet/onboarding/config";
 import { StepWrapper } from "@/components/shared/StepWrapper";
 import { ConfettiCelebration } from "@/components/shared/ConfettiCelebration";
 import { Button } from "@/components/ui/button";
@@ -10,70 +8,18 @@ import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
-import { apiFetch } from "@/lib/api";
-import { useAuthStore } from "@/stores/authStore";
 
 export function VetComplete() {
   const navigate = useNavigate();
   const { data, clearData } = useVetOnboardingStore();
-  const setVetProfileId = useAuthStore((s) => s.setVetProfileId);
-  const { prev, isFirst, isLast } = useMultiStepForm({
-    steps: VET_STEPS,
-    basePath: "/vet/onboarding",
-    storeData: data,
-    setStepData: () => {},
-  });
-
-  const submitMutation = useMutation({
-    mutationFn: () => {
-      const payload = {
-        name: data.name || "",
-        phone: data.phone || "",
-        useDrPrefix: data.useDrPrefix ?? false,
-        licenseNumber: data.licenseNumber || "",
-        issuingAuthority: data.issuingAuthority || "",
-        yearsOfPractice: Number(data.yearsOfPractice) || 1,
-        degree: data.degree || "DVM",
-        licenseDocUrl: data.licenseDocUrl,
-        clinicName: data.clinicName || "",
-        street: data.street || "",
-        city: data.city || "",
-        state: data.state || "",
-        zip: data.zip || "",
-        clinicPhone: data.clinicPhone || "",
-        website: data.website || "",
-        clinicLogoUrl: data.clinicLogoUrl,
-        specializations: data.specializations || [],
-        schedule: data.schedule || [],
-        consultationDuration: Number(data.consultationDuration) || 30,
-        bio: data.bio || "",
-        profilePhotoUrl: data.profilePhotoUrl,
-      };
-      return apiFetch<{ id: string }>("/vet/onboarding", {
-        method: "POST",
-        body: JSON.stringify(payload),
-      });
-    },
-    onSuccess: (result: any) => {
-      if (result?.id) {
-        setVetProfileId(result.id);
-      }
-    },
-  });
 
   const drPrefix = data.useDrPrefix ? "Dr. " : "";
   const vetName = `${drPrefix}${data.name || "Veterinarian"}`;
   const specializations = data.specializations || [];
 
-  const handleGoToDashboard = async () => {
-    try {
-      await submitMutation.mutateAsync();
-      clearData();
-      navigate("/vet/dashboard");
-    } catch {
-      // Error shown via submitMutation.error
-    }
+  const handleGoToDashboard = () => {
+    clearData();
+    navigate("/vet/dashboard");
   };
 
   const scheduleEnabled = data.schedule?.filter((s) => s.enabled) || [];
@@ -90,10 +36,6 @@ export function VetComplete() {
         title="Your Profile is Live!"
         description="Congratulations, you're ready to start serving patients"
         onNext={handleGoToDashboard}
-        onPrev={prev}
-        isFirst={isFirst}
-        isLast={isLast}
-        nextLabel="Go to Dashboard"
         showNav={false}
         className="flex flex-col gap-8"
       >
@@ -174,12 +116,6 @@ export function VetComplete() {
           </div>
         </motion.div>
 
-        {submitMutation.error && (
-          <div className="rounded-lg bg-destructive/10 p-3">
-            <p className="text-sm text-destructive">{submitMutation.error.message}</p>
-          </div>
-        )}
-
         <motion.div
           className="flex flex-col gap-3"
           initial={{ opacity: 0 }}
@@ -190,9 +126,8 @@ export function VetComplete() {
             size="lg"
             onClick={handleGoToDashboard}
             className="w-full bg-blue-600 hover:bg-blue-700"
-            disabled={submitMutation.isPending}
           >
-            {submitMutation.isPending ? "Saving..." : "Go to Dashboard"}
+            Go to Dashboard
           </Button>
           <p className="text-xs text-muted-foreground text-center">
             You can edit your profile anytime in your dashboard settings

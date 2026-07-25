@@ -7,7 +7,8 @@ import { StepWrapper } from "@/components/shared/StepWrapper";
 import { FileUpload } from "@/components/shared/FileUpload";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import * as React from "react";
+import { useState, useCallback } from "react";
+import { fileToBase64 } from "@/lib/photo";
 
 export function VetClinic() {
   const { data, setStepData } = useVetOnboardingStore();
@@ -18,7 +19,9 @@ export function VetClinic() {
     setStepData,
   });
 
-  const handleNext = React.useCallback(async () => {
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  const handleNext = useCallback(async () => {
     await next();
   }, [next]);
 
@@ -169,22 +172,28 @@ export function VetClinic() {
         </p>
         <FileUpload
           value={form.watch("clinicLogoUrl")}
-          onChange={(file) => {
+          onChange={async (file) => {
+            setUploadError(null);
             if (file) {
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                form.setValue("clinicLogoUrl", reader.result as string, {
-                  shouldValidate: true,
-                });
-              };
-              reader.readAsDataURL(file);
+              try {
+                const base64 = await fileToBase64(file);
+                form.setValue("clinicLogoUrl", base64, { shouldValidate: true });
+                setStepData({ clinicLogoUrl: base64 } as any);
+              } catch (err: any) {
+                form.setValue("clinicLogoUrl", undefined as any, { shouldValidate: true });
+                setUploadError(err?.message || "Failed to process file");
+              }
             } else {
-              form.setValue("clinicLogoUrl", "", { shouldValidate: true });
+              form.setValue("clinicLogoUrl", undefined as any, { shouldValidate: true });
+              setStepData({ clinicLogoUrl: undefined } as any);
             }
           }}
           shape="square"
           placeholder="Upload clinic logo"
         />
+        {uploadError && (
+          <p className="text-xs text-destructive">{uploadError}</p>
+        )}
       </div>
     </StepWrapper>
   );

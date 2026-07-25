@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useVetOnboardingStore } from "@/stores/vetOnboardingStore";
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
 import { VET_STEPS } from "@/features/vet/onboarding/config";
@@ -10,16 +11,24 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { VET_SPECIALIZATIONS } from "@/lib/constants";
 import { User, Star } from "lucide-react";
-import * as React from "react";
+import { useNavigate } from "react-router-dom";
+import { apiFetch } from "@/lib/api";
+import { useAuthStore } from "@/stores/authStore";
+import { fileToBase64 } from "@/lib/photo";
 
 export function VetProfileSetup() {
   const { data, setStepData } = useVetOnboardingStore();
-  const { form, next, prev, isFirst, isLast } = useMultiStepForm({
+  const { form, prev, isFirst } = useMultiStepForm({
     steps: VET_STEPS,
     basePath: "/vet/onboarding",
     storeData: data,
     setStepData,
   });
+  const navigate = useNavigate();
+  const setVetProfileId = useAuthStore((s) => s.setVetProfileId);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const bio = form.watch("bio") || "";
   const profilePhoto = form.watch("profilePhotoUrl");
@@ -28,9 +37,52 @@ export function VetProfileSetup() {
   const drPrefix = data.useDrPrefix ? "Dr. " : "";
   const vetName = `${drPrefix}${data.name || "Veterinarian"}`;
 
-  const handleNext = React.useCallback(async () => {
-    await next();
-  }, [next]);
+  const handleSubmit = async () => {
+    const valid = await form.trigger(["bio"]);
+    if (!valid) return;
+
+    setStepData(form.getValues());
+    const allData = { ...data, ...form.getValues() };
+
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const result = await apiFetch<{ id: string }>("/vet/onboarding", {
+        method: "POST",
+        body: JSON.stringify({
+          name: allData.name || "",
+          phone: allData.phone || "",
+          useDrPrefix: allData.useDrPrefix ?? false,
+          licenseNumber: allData.licenseNumber || "",
+          issuingAuthority: allData.issuingAuthority || "",
+          yearsOfPractice: Number(allData.yearsOfPractice) || 1,
+          degree: allData.degree || "DVM",
+          licenseDocUrl: allData.licenseDocUrl,
+          clinicName: allData.clinicName || "",
+          street: allData.street || "",
+          city: allData.city || "",
+          state: allData.state || "",
+          zip: allData.zip || "",
+          clinicPhone: allData.clinicPhone || "",
+          website: allData.website || "",
+          clinicLogoUrl: allData.clinicLogoUrl,
+          specializations: allData.specializations || [],
+          schedule: allData.schedule || [],
+          consultationDuration: Number(allData.consultationDuration) || 30,
+          bio: allData.bio || "",
+          profilePhotoUrl: allData.profilePhotoUrl,
+        }),
+      });
+      if ((result as any)?.id) {
+        setVetProfileId((result as any).id);
+      }
+      navigate("/vet/onboarding/complete");
+    } catch (err: any) {
+      setSubmitError(err?.message || "Failed to save. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const specLabels = VET_SPECIALIZATIONS.filter((spec) =>
     specializations.includes(spec.value)
@@ -40,10 +92,12 @@ export function VetProfileSetup() {
     <StepWrapper
       title="Almost There!"
       description="Complete your profile setup"
-      onNext={handleNext}
+      onNext={handleSubmit}
       onPrev={prev}
       isFirst={isFirst}
-      isLast={isLast}
+      isLast={true}
+      nextLabel={submitting ? "Saving..." : "Submit"}
+      nextDisabled={submitting}
     >
       {/* Profile Photo */}
       <div className="flex flex-col gap-2">
@@ -53,22 +107,28 @@ export function VetProfileSetup() {
         </p>
         <FileUpload
           value={profilePhoto}
-          onChange={(file) => {
+          onChange={async (file) => {
+            setUploadError(null);
             if (file) {
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                form.setValue("profilePhotoUrl", reader.result as string, {
-                  shouldValidate: true,
-                });
-              };
-              reader.readAsDataURL(file);
+              try {
+                const base64 = await fileToBase64(file);
+                form.setValue("profilePhotoUrl", base64, { shouldValidate: true });
+                setStepData({ profilePhotoUrl: base64 } as any);
+              } catch (err: any) {
+                form.setValue("profilePhotoUrl", undefined as any, { shouldValidate: true });
+                setUploadError(err?.message || "Failed to process file");
+              }
             } else {
-              form.setValue("profilePhotoUrl", "", { shouldValidate: true });
+              form.setValue("profilePhotoUrl", undefined as any, { shouldValidate: true });
+              setStepData({ profilePhotoUrl: undefined } as any);
             }
           }}
           shape="circle"
           placeholder="Upload your photo"
         />
+        {uploadError && (
+          <p className="text-xs text-destructive">{uploadError}</p>
+        )}
       </div>
 
       {/* Bio */}
@@ -158,6 +218,12 @@ export function VetProfileSetup() {
           )}
         </div>
       </div>
+
+      {submitError && (
+        <div className="rounded-lg bg-destructive/10 p-3">
+          <p className="text-sm text-destructive">{submitError}</p>
+        </div>
+      )}
     </StepWrapper>
   );
 }

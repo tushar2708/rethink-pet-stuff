@@ -16,7 +16,7 @@ export const vetCredentialsSchema = z.object({
   issuingAuthority: z.string().min(1, "Issuing authority is required"),
   yearsOfPractice: z.number().int().positive("Years of practice must be positive"),
   degree: z.enum(["DVM", "VMD", "BVSc", "other"]),
-  licenseDocUrl: z.string().url().optional(),
+  licenseDocUrl: z.string().optional(),
 });
 
 export type VetCredentials = z.infer<typeof vetCredentialsSchema>;

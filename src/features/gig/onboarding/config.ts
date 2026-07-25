@@ -24,7 +24,7 @@ export const GIG_STEPS: StepConfig[] = [
     id: "availability",
     path: "availability",
     schema: gigAvailabilitySchema,
-    fields: ["availableDays", "timePreferences", "coverageZip", "coverageRadiusMiles"],
+    fields: ["schedule", "timePreferences", "coverageZip", "coverageRadiusMiles"],
   },
   {
     id: "about",
@@ -47,6 +47,7 @@ export const GIG_STEPS: StepConfig[] = [
 ];
 
 export const GIG_STEP_LABELS = [
+  { id: "personal-info", label: "Personal Info" },
   { id: "services", label: "Services" },
   { id: "availability", label: "Availability" },
   { id: "about", label: "About You" },

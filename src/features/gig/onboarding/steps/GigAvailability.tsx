@@ -17,8 +17,7 @@ export function GigAvailability() {
     setStepData,
   });
 
-  const availableDays = (form.watch("availableDays") as any[]) || [];
-  const schedule = (form.watch("schedule") as any[]) || availableDays;
+  const schedule = (form.watch("schedule") as any[]) || [];
   const timePreferences = (form.watch("timePreferences") as string[]) || [];
 
   const toggleTimePref = (value: string) => {
@@ -44,11 +43,10 @@ export function GigAvailability() {
             value={schedule as any}
             onChange={(nextSchedule) => {
               form.setValue("schedule", nextSchedule as any, { shouldValidate: true });
-              form.setValue("availableDays", nextSchedule as any, { shouldValidate: true });
             }}
           />
-          {form.formState.errors.availableDays && (
-            <p className="text-xs text-destructive">{form.formState.errors.availableDays.message as string}</p>
+          {form.formState.errors.schedule && (
+            <p className="text-xs text-destructive">{form.formState.errors.schedule.message as string}</p>
           )}
         </div>
 
