@@ -4,10 +4,10 @@ import { ArrowLeft, Dog, Cat, Bird, Rabbit, HelpCircle, Heart, Shield } from "lu
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { usePet, useUpdatePet } from "@/hooks/usePets";
 import { useNavigate, useParams } from "react-router-dom";
 import { cn } from "@/lib/cn";
+import { fileToBase64 } from "@/lib/photo";
 import type { LucideIcon } from "lucide-react";
 
 const PET_ICONS: Record<string, LucideIcon> = { dog: Dog, cat: Cat, bird: Bird, hamster: Rabbit, other: HelpCircle };
@@ -35,15 +35,15 @@ export function PetEditPage() {
   const temperament = form.watch("temperament");
   const energyLevel = form.watch("energyLevel");
 
-  const handlePhotoChange = (file: File | null) => {
+  const handlePhotoChange = async (file: File | null) => {
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64 = reader.result as string;
+      try {
+        const base64 = await fileToBase64(file);
         setPhotoPreview(base64);
         form.setValue("photoUrl", base64);
-      };
-      reader.readAsDataURL(file);
+      } catch (err: any) {
+        alert(err.message);
+      }
     } else {
       setPhotoPreview(null);
       form.setValue("photoUrl", null);
@@ -89,7 +89,7 @@ export function PetEditPage() {
                   type="file"
                   accept="image/*"
                   className="absolute inset-0 cursor-pointer opacity-0"
-                  onChange={(e) => handlePhotoChange(e.target.files?.[0] || null)}
+                  onChange={(e) => void handlePhotoChange(e.target.files?.[0] || null)}
                 />
               </Button>
             </div>

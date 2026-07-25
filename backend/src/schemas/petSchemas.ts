@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { base64Schema } from "./vetSchemas";
 
 const petBaseSchema = z.object({
   name: z.string().min(1, "Pet name is required"),
@@ -9,7 +10,7 @@ const petBaseSchema = z.object({
   ageMonths: z.number().int().min(0).max(11).nullish(),
   temperament: z.enum(["calm", "needs-warming-up"]),
   energyLevel: z.enum(["low", "medium", "high"]),
-  photoUrl: z.string().nullish(),
+  photoUrl: base64Schema,
 });
 
 export const createPetSchema = petBaseSchema.refine(
@@ -32,8 +33,6 @@ export const petQuerySchema = z.object({
 
 export const ownerOnboardingSchema = z
   .object({
-    name: z.string().min(2, "Name must be at least 2 characters"),
-    phone: z.string().min(10, "Phone must be at least 10 digits"),
     petName: z.string().min(1, "Pet name is required"),
     petType: z.enum(["dog", "cat", "bird", "hamster", "other"]),
     customType: z.string().optional(),
@@ -42,7 +41,7 @@ export const ownerOnboardingSchema = z
     ageMonths: z.number().int().min(0).max(11).optional(),
     temperament: z.enum(["calm", "needs-warming-up"]),
     energyLevel: z.enum(["low", "medium", "high"]),
-    petPhoto: z.string().optional(),
+    petPhoto: base64Schema,
   })
   .refine((data) => data.petType !== "other" || !!data.customType, {
     message: "Custom pet type required when 'Other' selected",

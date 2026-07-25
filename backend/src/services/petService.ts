@@ -104,11 +104,7 @@ export async function ownerOnboard(userId: string, data: OwnerOnboardingInput) {
   const result = await prisma.$transaction(async (tx) => {
     const user = await tx.user.update({
       where: { id: userId },
-      data: {
-        name: data.name,
-        phone: data.phone,
-        onboardingComplete: true,
-      },
+      data: { onboardingComplete: true },
     });
 
     const pet = await tx.pet.create({

@@ -14,7 +14,7 @@ import type { OwnerOnboardingData } from "@/stores/ownerOnboardingStore"
 export function OwnerTemperament() {
   const navigate = useNavigate()
   const { data, setStepData } = useOwnerOnboardingStore()
-  const { form, next, prev, isFirst } = useMultiStepForm<OwnerOnboardingData>({
+  const { form, prev, isFirst } = useMultiStepForm<OwnerOnboardingData>({
     steps: OWNER_STEPS,
     basePath: "/owner/onboarding",
     storeData: data,
@@ -40,8 +40,6 @@ export function OwnerTemperament() {
       await apiFetch("/owner/onboarding", {
         method: "POST",
         body: JSON.stringify({
-          name: allData.name || "",
-          phone: allData.phone || "",
           petName: allData.petName || "",
           petType: allData.petType || "dog",
           customType: allData.customType,

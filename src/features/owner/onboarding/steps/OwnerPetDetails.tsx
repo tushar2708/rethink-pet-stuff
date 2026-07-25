@@ -4,6 +4,7 @@ import { OWNER_STEPS } from "@/features/owner/onboarding/config"
 import { StepWrapper } from "@/components/shared/StepWrapper"
 import { FileUpload } from "@/components/shared/FileUpload"
 import { Input } from "@/components/ui/input"
+import { fileToBase64 } from "@/lib/photo"
 import type { OwnerOnboardingData } from "@/stores/ownerOnboardingStore"
 
 export function OwnerPetDetails() {
@@ -22,15 +23,15 @@ export function OwnerPetDetails() {
     }
   }
 
-  const handlePhotoChange = (file: File | null) => {
+  const handlePhotoChange = async (file: File | null) => {
     if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        const base64 = reader.result as string
+      try {
+        const base64 = await fileToBase64(file)
         form.setValue("petPhoto", base64)
         setStepData({ petPhoto: base64 } as any)
+      } catch (err: any) {
+        alert(err.message)
       }
-      reader.readAsDataURL(file)
     } else {
       form.setValue("petPhoto", undefined as any)
       setStepData({ petPhoto: undefined } as any)
@@ -122,7 +123,7 @@ export function OwnerPetDetails() {
           value={data.petPhoto as any}
           onChange={handlePhotoChange}
           accept="image/*"
-          maxSizeMB={5}
+          maxSizeMB={1}
           shape="circle"
           placeholder="Upload photo"
         />
