@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/cn";
 import { useSignup } from "@/hooks/useAuth";
+import { useVetOnboardingStore } from "@/stores/vetOnboardingStore";
+import { useGigOnboardingStore } from "@/stores/gigOnboardingStore";
 
 const createAccountSchema = z
   .object({
@@ -53,9 +55,19 @@ export function CreateAccountPage() {
       if (selectedRole === "owner") {
         navigate("/owner/onboarding/pet-type");
       } else if (selectedRole === "vet") {
-        navigate("/vet/onboarding/credentials");
+        useVetOnboardingStore.getState().setStepData({
+          name: data.name,
+          email: data.email,
+          phone: data.phone,
+        });
+        navigate("/vet/onboarding/personal-info");
       } else {
-        navigate("/gig/onboarding/services");
+        useGigOnboardingStore.getState().setStepData({
+          firstName: data.name,
+          email: data.email,
+          phone: data.phone,
+        });
+        navigate("/gig/onboarding/personal-info");
       }
     } catch {
       // Error shown via signup.error

@@ -69,6 +69,19 @@ export function useMultiStepForm<T extends Record<string, any>>({
     } as unknown as T);
   }, [currentStepIndex, storeData, defaultValues, form]);
 
+  const saveCurrentStepFields = useCallback(() => {
+    if (!currentStep) return;
+    const allValues = form.getValues();
+    const stepValues: Record<string, unknown> = {};
+    for (const field of currentStep.fields) {
+      const val = allValues[field as keyof typeof allValues];
+      if (val !== undefined) {
+        stepValues[field] = val;
+      }
+    }
+    setStepData(stepValues as Partial<T>);
+  }, [currentStep, form, setStepData]);
+
   const next = useCallback(async (): Promise<boolean> => {
     if (!currentStep) {
       return false;
@@ -80,8 +93,7 @@ export function useMultiStepForm<T extends Record<string, any>>({
       return false;
     }
 
-    const currentValues = form.getValues();
-    setStepData(currentValues);
+    saveCurrentStepFields();
 
     if (currentStepIndex < steps.length - 1) {
       const nextStep = steps[currentStepIndex + 1];
@@ -96,14 +108,13 @@ export function useMultiStepForm<T extends Record<string, any>>({
     currentStepIndex,
     steps,
     form,
-    setStepData,
+    saveCurrentStepFields,
     navigate,
     basePath,
   ]);
 
   const prev = useCallback(() => {
-    const currentValues = form.getValues();
-    setStepData(currentValues);
+    saveCurrentStepFields();
 
     if (currentStepIndex > 0) {
       const prevStep = steps[currentStepIndex - 1];
@@ -111,18 +122,17 @@ export function useMultiStepForm<T extends Record<string, any>>({
         navigate(`${basePath}/${prevStep.path}`);
       }
     }
-  }, [currentStepIndex, steps, form, setStepData, navigate, basePath]);
+  }, [currentStepIndex, steps, saveCurrentStepFields, navigate, basePath]);
 
   const goToStep = useCallback(
     (stepId: string) => {
       const foundStep = steps.find((step) => step.id === stepId);
       if (foundStep) {
-        const currentValues = form.getValues();
-        setStepData(currentValues);
+        saveCurrentStepFields();
         navigate(`${basePath}/${foundStep.path}`);
       }
     },
-    [steps, form, setStepData, navigate, basePath]
+    [steps, saveCurrentStepFields, navigate, basePath]
   );
 
   const isFirst = currentStepIndex === 0;

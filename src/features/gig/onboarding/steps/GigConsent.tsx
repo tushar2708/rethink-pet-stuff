@@ -23,8 +23,8 @@ export function GigConsent() {
     const valid = await form.trigger(["backgroundCheckConsent", "termsAccepted"]);
     if (!valid) return;
 
-    setStepData(form.getValues());
-    const allData = { ...data, ...form.getValues() };
+    setStepData({ backgroundCheckConsent: form.getValues("backgroundCheckConsent"), termsAccepted: form.getValues("termsAccepted") } as any);
+    const storeSnapshot = useGigOnboardingStore.getState().data;
 
     setSubmitting(true);
     setSubmitError(null);
@@ -32,19 +32,19 @@ export function GigConsent() {
       const result = await apiFetch<{ id: string }>("/gig/onboarding", {
         method: "POST",
         body: JSON.stringify({
-          firstName: allData.firstName || "",
-          email: allData.email || "",
-          phone: allData.phone || "",
-          services: allData.services || [],
-          schedule: allData.schedule || [],
-          timePreferences: allData.timePreferences || [],
-          coverageZip: allData.coverageZip || "",
-          coverageRadiusMiles: Number(allData.coverageRadiusMiles) || 5,
-          bio: allData.bio || "",
-          hasPets: allData.hasPets ?? false,
-          petDetails: allData.petDetails,
+          firstName: storeSnapshot.firstName || "",
+          email: storeSnapshot.email || "",
+          phone: storeSnapshot.phone || "",
+          services: storeSnapshot.services || [],
+          schedule: storeSnapshot.schedule || [],
+          timePreferences: storeSnapshot.timePreferences || [],
+          coverageZip: storeSnapshot.coverageZip || "",
+          coverageRadiusMiles: Number(storeSnapshot.coverageRadiusMiles) || 5,
+          bio: storeSnapshot.bio || "",
+          hasPets: storeSnapshot.hasPets ?? false,
+          petDetails: storeSnapshot.petDetails,
           backgroundCheckConsent: true,
-          photoUrl: allData.photoUrl,
+          photoUrl: storeSnapshot.photoUrl,
         }),
       });
       if ((result as any)?.id) {

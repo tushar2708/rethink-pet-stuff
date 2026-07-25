@@ -44,7 +44,7 @@ export function FindVetPage() {
             <Link key={vet.id} to={`/owner/find-vet/${vet.id}`}>
               <Card className="space-y-3 p-4 hover:border-primary/50">
                 <div>
-                  <p className="font-semibold text-foreground">{vet.user?.name}</p>
+                  <p className="font-semibold text-foreground">{vet.useDrPrefix ? "Dr. " : ""}{vet.user?.name}</p>
                   <p className="text-sm text-muted-foreground">{vet.clinics?.[0]?.name}</p>
                 </div>
                 <div className="flex flex-wrap gap-2">

@@ -90,7 +90,7 @@ function RateInput({
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <span className="text-sm font-medium">$</span>
+        <span className="text-sm font-medium">₹</span>
         <Input
           type="number"
           value={value || ""}
@@ -103,7 +103,7 @@ function RateInput({
         <span className="text-sm font-medium">/hr</span>
       </div>
       <p className="text-xs text-muted-foreground">
-        Suggested: ${suggestedRange.min} – ${suggestedRange.max}/hr
+        Suggested: ₹{suggestedRange.min} – ₹{suggestedRange.max}/hr
       </p>
     </div>
   );
@@ -241,6 +241,8 @@ export function ServiceDetailExpander({
     [services, onChange]
   );
 
+  const selectedList = GIG_SERVICES.filter((s) => selectedTypes.has(s.value));
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -254,27 +256,26 @@ export function ServiceDetailExpander({
                 onSelect={() => handleSelectService(service.value)}
                 onExpand={() => {}}
               />
-              <AnimatePresence>
-                {isSelected && (
-                  <div className="mt-0">
-                    <ExpandedServicePanel
-                      service={service}
-                      offering={
-                        serviceOfferings.get(service.value) || {
-                          type: service.value,
-                          experienceLevel: "beginner",
-                          hourlyRate: service.suggestedRateRange.min,
-                        }
-                      }
-                      onUpdate={handleUpdateService}
-                    />
-                  </div>
-                )}
-              </AnimatePresence>
             </div>
           );
         })}
       </div>
+      <AnimatePresence>
+        {selectedList.map((service) => (
+          <ExpandedServicePanel
+            key={service.value}
+            service={service}
+            offering={
+              serviceOfferings.get(service.value) || {
+                type: service.value,
+                experienceLevel: "beginner",
+                hourlyRate: service.suggestedRateRange.min,
+              }
+            }
+            onUpdate={handleUpdateService}
+          />
+        ))}
+      </AnimatePresence>
     </div>
   );
 }

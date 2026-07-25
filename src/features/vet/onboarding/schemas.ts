@@ -75,7 +75,7 @@ export const vetAvailabilitySchema = z.object({
       })
     )
     .min(1, "Add availability for at least one day"),
-  consultationDuration: z.enum(["15", "30", "45", "60"]).pipe(z.coerce.number()),
+  consultationDuration: z.number().refine((v) => [15, 30, 45, 60].includes(v), "Must be 15, 30, 45, or 60"),
 });
 
 export type VetAvailability = z.infer<typeof vetAvailabilitySchema>;

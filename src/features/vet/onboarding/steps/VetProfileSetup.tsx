@@ -41,8 +41,8 @@ export function VetProfileSetup() {
     const valid = await form.trigger(["bio"]);
     if (!valid) return;
 
-    setStepData(form.getValues());
-    const allData = { ...data, ...form.getValues() };
+    setStepData({ bio: form.getValues("bio"), profilePhotoUrl: form.getValues("profilePhotoUrl") } as any);
+    const s = useVetOnboardingStore.getState().data;
 
     setSubmitting(true);
     setSubmitError(null);
@@ -50,27 +50,27 @@ export function VetProfileSetup() {
       const result = await apiFetch<{ id: string }>("/vet/onboarding", {
         method: "POST",
         body: JSON.stringify({
-          name: allData.name || "",
-          phone: allData.phone || "",
-          useDrPrefix: allData.useDrPrefix ?? false,
-          licenseNumber: allData.licenseNumber || "",
-          issuingAuthority: allData.issuingAuthority || "",
-          yearsOfPractice: Number(allData.yearsOfPractice) || 1,
-          degree: allData.degree || "DVM",
-          licenseDocUrl: allData.licenseDocUrl,
-          clinicName: allData.clinicName || "",
-          street: allData.street || "",
-          city: allData.city || "",
-          state: allData.state || "",
-          zip: allData.zip || "",
-          clinicPhone: allData.clinicPhone || "",
-          website: allData.website || "",
-          clinicLogoUrl: allData.clinicLogoUrl,
-          specializations: allData.specializations || [],
-          schedule: allData.schedule || [],
-          consultationDuration: Number(allData.consultationDuration) || 30,
-          bio: allData.bio || "",
-          profilePhotoUrl: allData.profilePhotoUrl,
+          name: s.name || "",
+          phone: s.phone || "",
+          useDrPrefix: s.useDrPrefix ?? false,
+          licenseNumber: s.licenseNumber || "",
+          issuingAuthority: s.issuingAuthority || "",
+          yearsOfPractice: Number(s.yearsOfPractice) || 1,
+          degree: s.degree || "DVM",
+          licenseDocUrl: s.licenseDocUrl,
+          clinicName: s.clinicName || "",
+          street: s.street || "",
+          city: s.city || "",
+          state: s.state || "",
+          zip: s.zip || "",
+          clinicPhone: s.clinicPhone || "",
+          website: s.website || "",
+          clinicLogoUrl: s.clinicLogoUrl,
+          specializations: s.specializations || [],
+          schedule: s.schedule || [],
+          consultationDuration: Number(s.consultationDuration) || 30,
+          bio: s.bio || "",
+          profilePhotoUrl: s.profilePhotoUrl,
         }),
       });
       if ((result as any)?.id) {
