@@ -3,13 +3,13 @@ import { z } from "zod";
 const petBaseSchema = z.object({
   name: z.string().min(1, "Pet name is required"),
   type: z.enum(["dog", "cat", "bird", "hamster", "other"]),
-  customType: z.string().optional(),
-  breed: z.string().optional(),
-  ageYears: z.number().int().nonnegative().optional(),
-  ageMonths: z.number().int().min(0).max(11).optional(),
+  customType: z.string().nullish(),
+  breed: z.string().nullish(),
+  ageYears: z.number().int().nonnegative().nullish(),
+  ageMonths: z.number().int().min(0).max(11).nullish(),
   temperament: z.enum(["calm", "needs-warming-up"]),
   energyLevel: z.enum(["low", "medium", "high"]),
-  photoUrl: z.string().optional(),
+  photoUrl: z.string().nullish(),
 });
 
 export const createPetSchema = petBaseSchema.refine(

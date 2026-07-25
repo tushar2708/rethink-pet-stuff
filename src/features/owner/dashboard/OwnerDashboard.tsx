@@ -62,9 +62,13 @@ export function OwnerDashboard() {
                 <Link key={pet.id} to={`/owner/pets/${pet.id}`}>
                   <Card className="space-y-3 p-4 hover:border-primary/50">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                        <Icon className="h-5 w-5 text-primary" />
-                      </div>
+                      {pet.photoUrl ? (
+                        <img src={pet.photoUrl} alt={pet.name} className="h-10 w-10 rounded-full object-cover" />
+                      ) : (
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                          <Icon className="h-5 w-5 text-primary" />
+                        </div>
+                      )}
                       <div>
                         <p className="font-semibold text-foreground">{pet.name}</p>
                         <p className="text-xs text-muted-foreground">{pet.breed || pet.type}</p>

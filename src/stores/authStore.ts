@@ -31,6 +31,6 @@ export const useAuthStore = create<AuthState>()(
           gigProfileId: null,
         }),
     }),
-    { name: "petstuff-auth" }
+    { name: "petos-auth" }
   )
 );

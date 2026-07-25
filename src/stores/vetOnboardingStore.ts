@@ -56,7 +56,7 @@ export const useVetOnboardingStore = create<VetOnboardingState>()(
       },
     }),
     {
-      name: "petstuff-vet-onboarding",
+      name: "petos-vet-onboarding",
     }
   )
 );

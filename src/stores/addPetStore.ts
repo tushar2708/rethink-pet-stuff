@@ -10,6 +10,7 @@ export interface AddPetData {
   breed: string;
   temperament: string;
   energyLevel: string;
+  petPhoto: string;
 }
 
 interface AddPetState {
@@ -35,7 +36,7 @@ export const useAddPetStore = create<AddPetState>()(
       },
     }),
     {
-      name: "petstuff-add-pet",
+      name: "petos-add-pet",
     }
   )
 );

@@ -61,7 +61,7 @@ export function RoleSelectPage() {
         transition={{ duration: 0.4 }}
         className="text-center"
       >
-        <h2 className="text-2xl font-bold text-foreground">How will you use PetStuff?</h2>
+        <h2 className="text-2xl font-bold text-foreground">How will you use Pet OS?</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Choose the role that best describes you
         </p>

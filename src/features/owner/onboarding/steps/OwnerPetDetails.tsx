@@ -24,8 +24,16 @@ export function OwnerPetDetails() {
 
   const handlePhotoChange = (file: File | null) => {
     if (file) {
-      // Store the file in form state
-      form.setValue("petPhoto", file as any)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        const base64 = reader.result as string
+        form.setValue("petPhoto", base64)
+        setStepData({ petPhoto: base64 } as any)
+      }
+      reader.readAsDataURL(file)
+    } else {
+      form.setValue("petPhoto", undefined as any)
+      setStepData({ petPhoto: undefined } as any)
     }
   }
 

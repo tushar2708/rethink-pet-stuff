@@ -43,7 +43,7 @@ export const useOwnerOnboardingStore = create<OwnerOnboardingState>()(
       },
     }),
     {
-      name: "petstuff-owner-onboarding",
+      name: "petos-owner-onboarding",
     }
   )
 );

@@ -55,7 +55,7 @@ export function LoginPage() {
       <div className="text-center">
         <h2 className="text-2xl font-bold text-foreground">Welcome back</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Sign in to your PetStuff account
+          Sign in to your Pet OS account
         </p>
       </div>
 

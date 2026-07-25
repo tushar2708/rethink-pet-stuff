@@ -45,7 +45,7 @@ app.all("/api/*", (_req, res) => {
 
 // In production, serve the built React frontend
 if (config.NODE_ENV === "production") {
-  const frontendDist = path.join(__dirname, "../../frontend");
+  const frontendDist = path.join(__dirname, "../frontend");
   app.use(express.static(frontendDist));
   app.get("*", (_req, res) => {
     res.sendFile(path.join(frontendDist, "index.html"));
@@ -56,7 +56,7 @@ if (config.NODE_ENV === "production") {
 app.use(errorHandler);
 
 app.listen(config.PORT, () => {
-  console.log(`PetStuff API running on port ${config.PORT} [${config.NODE_ENV}]`);
+  console.log(`Pet OS API running on port ${config.PORT} [${config.NODE_ENV}]`);
 });
 
 export default app;

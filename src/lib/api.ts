@@ -4,7 +4,7 @@ export async function apiFetch<T>(
   path: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const token = localStorage.getItem("petstuff-token");
+  const token = localStorage.getItem("petos-token");
 
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,

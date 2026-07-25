@@ -107,7 +107,7 @@ export function SignupPage() {
       <div className="text-center">
         <h2 className="text-2xl font-bold text-foreground">Create your account</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Join PetStuff and connect with pet care
+          Join Pet OS and connect with pet care
         </p>
       </div>
 

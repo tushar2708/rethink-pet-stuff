@@ -21,7 +21,7 @@ export function LandingPage() {
       <nav className="relative z-20 flex items-center justify-between px-6 py-4 sm:px-10">
         <Link to="/" className="flex items-center gap-2 text-xl font-bold text-foreground">
           <PawPrint className="h-6 w-6 text-amber-500" />
-          PetStuff
+          Pet OS
         </Link>
         <div className="flex items-center gap-3">
           <Link to="/onboarding/create-account">

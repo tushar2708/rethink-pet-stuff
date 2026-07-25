@@ -55,7 +55,7 @@ export function Sidebar({ navItems }: SidebarProps) {
     <div className="fixed left-0 top-0 z-50 hidden h-screen w-60 flex-col border-r border-border bg-card md:flex">
       {/* Header */}
       <div className="border-b border-border p-6">
-        <h1 className="text-xl font-bold text-foreground">PetStuff</h1>
+        <h1 className="text-xl font-bold text-foreground">Pet OS</h1>
       </div>
 
       {/* Navigation Items */}

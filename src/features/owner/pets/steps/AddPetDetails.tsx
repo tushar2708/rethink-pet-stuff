@@ -23,7 +23,26 @@ export function AddPetDetails() {
           <Input type="number" placeholder="Months" {...form.register("ageMonths", { valueAsNumber: true })} />
         </div>
         <Input placeholder="Breed" {...form.register("breed")} />
-        <FileUpload value={undefined} onChange={() => {}} accept="image/*" shape="circle" placeholder="Upload photo" />
+        <FileUpload
+          value={data.petPhoto as string | undefined}
+          onChange={(file) => {
+            if (file) {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                const base64 = reader.result as string;
+                form.setValue("petPhoto" as any, base64);
+                setStepData({ petPhoto: base64 } as any);
+              };
+              reader.readAsDataURL(file);
+            } else {
+              form.setValue("petPhoto" as any, undefined);
+              setStepData({ petPhoto: undefined } as any);
+            }
+          }}
+          accept="image/*"
+          shape="circle"
+          placeholder="Upload photo"
+        />
       </div>
     </StepWrapper>
   );

@@ -20,8 +20,8 @@ export type OwnerPetType = z.infer<typeof ownerPetTypeSchema>;
 // Pet Details Step
 export const ownerPetDetailsSchema = z.object({
   petName: z.string().min(1, "Pet name is required"),
-  ageYears: z.number().int().nonnegative().optional(),
-  ageMonths: z.number().int().min(0).max(11).optional(),
+  ageYears: z.preprocess((v) => (v === "" || Number.isNaN(v) ? undefined : Number(v)), z.number({ required_error: "Age in years is required" }).int().nonnegative()),
+  ageMonths: z.preprocess((v) => (v === "" || Number.isNaN(v) ? undefined : Number(v)), z.number({ required_error: "Age in months is required" }).int().min(0).max(11)),
   breed: z.string().optional(),
 });
 

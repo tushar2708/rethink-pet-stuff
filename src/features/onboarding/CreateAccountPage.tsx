@@ -78,7 +78,7 @@ export function CreateAccountPage() {
         <div className="mb-8 text-center">
           <PawPrint className="mx-auto h-10 w-10 text-amber-500" />
           <h1 className="mt-4 text-2xl font-bold text-foreground">Create your account</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Join PetStuff in under a minute</p>
+          <p className="mt-2 text-sm text-muted-foreground">Join Pet OS in under a minute</p>
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">

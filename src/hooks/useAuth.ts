@@ -25,7 +25,7 @@ function normalizeUser(user: AuthResponse["user"]) {
 }
 
 function handleAuthSuccess(data: AuthResponse) {
-  localStorage.setItem("petstuff-token", data.token);
+  localStorage.setItem("petos-token", data.token);
   useAuthStore.getState().setUser(normalizeUser(data.user));
 }
 
@@ -63,12 +63,12 @@ export function useCurrentUser() {
       setUser(normalizedUser);
       return normalizedUser;
     },
-    enabled: !!localStorage.getItem("petstuff-token"),
+    enabled: !!localStorage.getItem("petos-token"),
     retry: false,
     staleTime: 5 * 60 * 1000,
     meta: {
       onError: () => {
-        localStorage.removeItem("petstuff-token");
+        localStorage.removeItem("petos-token");
         logout();
       },
     },
@@ -80,7 +80,7 @@ export function useLogout() {
   const logout = useAuthStore((s) => s.logout);
 
   return () => {
-    localStorage.removeItem("petstuff-token");
+    localStorage.removeItem("petos-token");
     logout();
     queryClient.clear();
   };

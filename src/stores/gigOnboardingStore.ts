@@ -54,7 +54,7 @@ export const useGigOnboardingStore = create<GigOnboardingState>()(
       },
     }),
     {
-      name: "petstuff-gig-onboarding",
+      name: "petos-gig-onboarding",
     }
   )
 );

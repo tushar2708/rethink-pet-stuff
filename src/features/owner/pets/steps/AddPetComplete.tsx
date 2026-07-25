@@ -28,6 +28,7 @@ export function AddPetComplete() {
       ageMonths: data.ageMonths,
       temperament: data.temperament,
       energyLevel: data.energyLevel,
+      photoUrl: data.petPhoto,
     } as any);
     clearData();
     navigate("/owner/dashboard");
