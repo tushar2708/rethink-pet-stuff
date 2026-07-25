@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { DaySchedule } from "@/types/common";
 
 export interface ServiceOffering {
   type: string;
@@ -16,7 +17,8 @@ export interface GigOnboardingData {
   services: ServiceOffering[];
   // Step 3: Availability & Coverage
   availableDays: string[];
-  timePreferences: string;
+  timePreferences: string[];
+  schedule: DaySchedule[];
   coverageZip: string;
   coverageRadiusMiles: number | undefined;
   // Step 4: Bio & Pets
@@ -26,6 +28,7 @@ export interface GigOnboardingData {
   // Step 5: Agreements
   backgroundCheckConsent: boolean;
   termsAccepted: boolean;
+  photoUrl?: string;
 }
 
 interface GigOnboardingState {

@@ -8,6 +8,7 @@ export const createAppointmentSchema = z.object({
   scheduledAt: z.string().datetime("Invalid datetime format"),
   durationMinutes: z.number().int().positive("Duration must be positive"),
   notes: z.string().optional(),
+  price: z.number().positive("Price must be positive").optional(),
 });
 
 export const updateAppointmentSchema = z.object({

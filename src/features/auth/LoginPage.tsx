@@ -1,13 +1,13 @@
-import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/cn";
+import { useLogin } from "@/hooks/useAuth";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -18,7 +18,8 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export function LoginPage() {
-  const [isLoading, setIsLoading] = React.useState(false);
+  const login = useLogin();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -34,19 +35,23 @@ export function LoginPage() {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      setIsLoading(true);
-      // TODO: Implement real authentication
-      console.log("Login attempt:", data);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    } finally {
-      setIsLoading(false);
+      const result = await login.mutateAsync({
+        email: data.email,
+        password: data.password,
+      });
+      const user = result.user;
+      if (!user.onboardingComplete) {
+        navigate(`/${user.role}/onboarding`);
+      } else {
+        navigate(`/${user.role}/dashboard`);
+      }
+    } catch {
+      // Error is available via login.error
     }
   };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-foreground">Welcome back</h2>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -54,9 +59,13 @@ export function LoginPage() {
         </p>
       </div>
 
-      {/* Login Form */}
+      {login.error && (
+        <div className="rounded-lg bg-destructive/10 p-3">
+          <p className="text-sm text-destructive">{login.error.message}</p>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Email Field */}
         <div className="space-y-2">
           <label htmlFor="email" className="text-sm font-medium text-foreground">
             Email
@@ -66,7 +75,7 @@ export function LoginPage() {
             type="email"
             placeholder="you@example.com"
             {...register("email")}
-            disabled={isLoading}
+            disabled={login.isPending}
             className={cn(
               errors.email && "border-destructive focus-visible:ring-destructive"
             )}
@@ -76,7 +85,6 @@ export function LoginPage() {
           )}
         </div>
 
-        {/* Password Field */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <label htmlFor="password" className="text-sm font-medium text-foreground">
@@ -94,7 +102,7 @@ export function LoginPage() {
             type="password"
             placeholder="••••••••"
             {...register("password")}
-            disabled={isLoading}
+            disabled={login.isPending}
             className={cn(
               errors.password && "border-destructive focus-visible:ring-destructive"
             )}
@@ -104,13 +112,12 @@ export function LoginPage() {
           )}
         </div>
 
-        {/* Remember Me Checkbox */}
         <div className="flex items-center gap-2">
           <input
             id="rememberMe"
             type="checkbox"
             {...register("rememberMe")}
-            disabled={isLoading}
+            disabled={login.isPending}
             className="h-4 w-4 rounded border-input bg-background cursor-pointer accent-primary"
           />
           <label
@@ -121,13 +128,8 @@ export function LoginPage() {
           </label>
         </div>
 
-        {/* Login Button */}
-        <Button
-          type="submit"
-          disabled={isLoading}
-          className="w-full"
-        >
-          {isLoading ? (
+        <Button type="submit" disabled={login.isPending} className="w-full">
+          {login.isPending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Logging in...
@@ -138,7 +140,6 @@ export function LoginPage() {
         </Button>
       </form>
 
-      {/* Divider */}
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-border" />
@@ -148,16 +149,11 @@ export function LoginPage() {
         </div>
       </div>
 
-      {/* Google Sign-In Button */}
       <Button
         type="button"
         variant="outline"
-        disabled={isLoading}
+        disabled={login.isPending}
         className="w-full"
-        onClick={() => {
-          // TODO: Implement Google OAuth
-          console.log("Google sign-in clicked");
-        }}
       >
         <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
           <path
@@ -180,7 +176,6 @@ export function LoginPage() {
         Continue with Google
       </Button>
 
-      {/* Sign Up Link */}
       <p className="text-center text-sm text-muted-foreground">
         Don't have an account?{" "}
         <Link to="/signup" className="font-medium text-primary hover:underline">

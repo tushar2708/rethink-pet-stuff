@@ -10,10 +10,14 @@ import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { apiFetch } from "@/lib/api";
+import { useAuthStore } from "@/stores/authStore";
 
 export function VetComplete() {
   const navigate = useNavigate();
   const { data, clearData } = useVetOnboardingStore();
+  const setVetProfileId = useAuthStore((s) => s.setVetProfileId);
   const { prev, isFirst, isLast } = useMultiStepForm({
     steps: VET_STEPS,
     basePath: "/vet/onboarding",
@@ -21,16 +25,57 @@ export function VetComplete() {
     setStepData: () => {},
   });
 
+  const submitMutation = useMutation({
+    mutationFn: () => {
+      const payload = {
+        name: data.name || "",
+        phone: data.phone || "",
+        useDrPrefix: data.useDrPrefix ?? false,
+        licenseNumber: data.licenseNumber || "",
+        issuingAuthority: data.issuingAuthority || "",
+        yearsOfPractice: Number(data.yearsOfPractice) || 1,
+        degree: data.degree || "DVM",
+        licenseDocUrl: data.licenseDocUrl,
+        clinicName: data.clinicName || "",
+        street: data.street || "",
+        city: data.city || "",
+        state: data.state || "",
+        zip: data.zip || "",
+        clinicPhone: data.clinicPhone || "",
+        website: data.website || "",
+        clinicLogoUrl: data.clinicLogoUrl,
+        specializations: data.specializations || [],
+        schedule: data.schedule || [],
+        consultationDuration: Number(data.consultationDuration) || 30,
+        bio: data.bio || "",
+        profilePhotoUrl: data.profilePhotoUrl,
+      };
+      return apiFetch<{ id: string }>("/vet/onboarding", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    },
+    onSuccess: (result: any) => {
+      if (result?.id) {
+        setVetProfileId(result.id);
+      }
+    },
+  });
+
   const drPrefix = data.useDrPrefix ? "Dr. " : "";
   const vetName = `${drPrefix}${data.name || "Veterinarian"}`;
   const specializations = data.specializations || [];
 
-  const handleGoToDashboard = () => {
-    clearData();
-    navigate("/vet/dashboard");
+  const handleGoToDashboard = async () => {
+    try {
+      await submitMutation.mutateAsync();
+      clearData();
+      navigate("/vet/dashboard");
+    } catch {
+      // Error shown via submitMutation.error
+    }
   };
 
-  // Format schedule summary
   const scheduleEnabled = data.schedule?.filter((s) => s.enabled) || [];
   const scheduleSummary =
     scheduleEnabled.length > 0
@@ -52,7 +97,6 @@ export function VetComplete() {
         showNav={false}
         className="flex flex-col gap-8"
       >
-        {/* Checkmark Animation */}
         <motion.div
           className="flex justify-center"
           initial={{ scale: 0, opacity: 0 }}
@@ -65,7 +109,6 @@ export function VetComplete() {
           }}
         >
           <div className="relative w-20 h-20">
-            {/* Outer ring */}
             <motion.div
               className="absolute inset-0 rounded-full border-2 border-green-500"
               initial={{ scale: 0.5, opacity: 0 }}
@@ -73,7 +116,6 @@ export function VetComplete() {
               transition={{ duration: 0.6, delay: 0.3 }}
             />
 
-            {/* Checkmark */}
             <motion.div
               className="absolute inset-0 flex items-center justify-center"
               initial={{ scale: 0 }}
@@ -90,20 +132,17 @@ export function VetComplete() {
           </div>
         </motion.div>
 
-        {/* Profile Summary */}
         <motion.div
           className="space-y-4"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
         >
-          {/* Name & Clinic */}
           <div className="border rounded-lg p-4 bg-blue-50 border-blue-200">
             <h3 className="font-semibold text-foreground">{vetName}</h3>
             <p className="text-sm text-muted-foreground">{data.clinicName}</p>
           </div>
 
-          {/* Specializations */}
           {specializations.length > 0 && (
             <div>
               <p className="text-sm font-medium text-foreground mb-2">
@@ -124,7 +163,6 @@ export function VetComplete() {
             </div>
           )}
 
-          {/* Schedule */}
           <div>
             <p className="text-sm font-medium text-foreground mb-2">Schedule</p>
             <p className="text-sm text-muted-foreground">{scheduleSummary}</p>
@@ -136,7 +174,12 @@ export function VetComplete() {
           </div>
         </motion.div>
 
-        {/* CTA Buttons */}
+        {submitMutation.error && (
+          <div className="rounded-lg bg-destructive/10 p-3">
+            <p className="text-sm text-destructive">{submitMutation.error.message}</p>
+          </div>
+        )}
+
         <motion.div
           className="flex flex-col gap-3"
           initial={{ opacity: 0 }}
@@ -147,8 +190,9 @@ export function VetComplete() {
             size="lg"
             onClick={handleGoToDashboard}
             className="w-full bg-blue-600 hover:bg-blue-700"
+            disabled={submitMutation.isPending}
           >
-            Go to Dashboard
+            {submitMutation.isPending ? "Saving..." : "Go to Dashboard"}
           </Button>
           <p className="text-xs text-muted-foreground text-center">
             You can edit your profile anytime in your dashboard settings

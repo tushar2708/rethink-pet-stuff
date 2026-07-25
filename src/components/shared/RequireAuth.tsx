@@ -1,5 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
+import { useCurrentUser } from "@/hooks/useAuth";
 import type { UserRole } from "@/types/user";
 
 interface RequireAuthProps {
@@ -7,33 +8,29 @@ interface RequireAuthProps {
   children: React.ReactNode;
 }
 
-/**
- * RequireAuth guard component.
- *
- * TODO: Wire up actual authentication logic once auth backend is ready.
- * Currently allows all access during development.
- */
 export function RequireAuth({ role, children }: RequireAuthProps) {
   const { isAuthenticated, user } = useAuthStore();
+  const { isLoading } = useCurrentUser();
 
-  // TODO: Remove this after auth is wired up. This allows development without auth.
-  if (true) {
-    return children;
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
   }
 
-  // Fallback authentication check (for when auth is wired up)
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
   if (role && user?.role !== role) {
-    // Redirect to correct portal based on user role
-    const portalMap: Record<UserRole, string> = {
+    const portalMap: Record<string, string> = {
       owner: "/owner/dashboard",
       vet: "/vet/dashboard",
       gig: "/gig/dashboard",
     };
-    return <Navigate to={portalMap[user!.role]} replace />;
+    return <Navigate to={portalMap[user!.role] || "/login"} replace />;
   }
 
   return children;

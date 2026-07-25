@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
+import { useCurrentUser } from "@/hooks/useAuth";
 
 function ErrorFallback() {
   return (
@@ -13,6 +14,8 @@ function ErrorFallback() {
 }
 
 export function RootLayout() {
+  useCurrentUser();
+
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <Outlet />

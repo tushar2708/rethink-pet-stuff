@@ -275,3 +275,76 @@ export async function search(query: VetSearchQuery): Promise<{
     limit: query.limit,
   };
 }
+
+export async function getByUserId(userId: string) {
+  const vetProfile = await prisma.vetProfile.findUnique({
+    where: { userId },
+    include: vetProfileInclude,
+  });
+  if (!vetProfile) {
+    throw new AppError(404, "Vet profile not found");
+  }
+  return vetProfile;
+}
+
+export async function getPatients(userId: string) {
+  const appointments = await prisma.appointment.findMany({
+    where: { providerId: userId, providerType: "vet" },
+    include: {
+      pet: {
+        include: {
+          owner: { select: { id: true, name: true, email: true, phone: true } },
+        },
+      },
+    },
+    orderBy: { scheduledAt: "desc" },
+  });
+
+  const petMap = new Map<string, (typeof appointments)[number]["pet"]>();
+  for (const appt of appointments) {
+    if (!petMap.has(appt.pet.id)) {
+      petMap.set(appt.pet.id, appt.pet);
+    }
+  }
+  return Array.from(petMap.values());
+}
+
+export async function getPatientDetail(userId: string, petId: string) {
+  const appointments = await prisma.appointment.findMany({
+    where: { providerId: userId, petId, providerType: "vet" },
+    include: {
+      pet: true,
+      owner: { select: { id: true, name: true, email: true, phone: true } },
+    },
+    orderBy: { scheduledAt: "desc" },
+  });
+  if (appointments.length === 0) {
+    throw new AppError(404, "No records found for this patient");
+  }
+  return { pet: appointments[0]!.pet, appointments };
+}
+
+export async function updateSchedule(
+  userId: string,
+  schedule: Array<{ day: string; enabled: boolean; slots: any }>
+) {
+  const vetProfile = await prisma.vetProfile.findUnique({ where: { userId } });
+  if (!vetProfile) throw new AppError(404, "Vet profile not found");
+
+  await prisma.$transaction(async (tx) => {
+    await tx.schedule.deleteMany({ where: { vetProfileId: vetProfile.id } });
+    await tx.schedule.createMany({
+      data: schedule.map((s) => ({
+        vetProfileId: vetProfile.id,
+        day: s.day as any,
+        enabled: s.enabled,
+        slots: s.slots,
+      })),
+    });
+  });
+
+  return prisma.vetProfile.findUnique({
+    where: { id: vetProfile.id },
+    include: vetProfileInclude,
+  });
+}

@@ -2,27 +2,32 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/cn";
+import { useSignup } from "@/hooks/useAuth";
 
-const signupSchema = z.object({
-  fullName: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Password must contain an uppercase letter")
-    .regex(/[a-z]/, "Password must contain a lowercase letter")
-    .regex(/[0-9]/, "Password must contain a number"),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const signupSchema = z
+  .object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Please enter a valid email"),
+    phone: z.string().min(10, "Phone must be at least 10 digits"),
+    role: z.enum(["owner", "vet", "gig"], { required_error: "Please select a role" }),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/[0-9]/, "Password must contain at least one number"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 type SignupFormData = z.infer<typeof signupSchema>;
 
@@ -46,7 +51,8 @@ function getPasswordStrength(password: string): {
 }
 
 export function SignupPage() {
-  const [isLoading, setIsLoading] = React.useState(false);
+  const signup = useSignup();
+  const navigate = useNavigate();
   const [passwordStrength, setPasswordStrength] = React.useState({
     score: 0,
     label: "",
@@ -57,12 +63,15 @@ export function SignupPage() {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      fullName: "",
+      name: "",
       email: "",
+      phone: "",
+      role: undefined,
       password: "",
       confirmPassword: "",
     },
@@ -80,19 +89,21 @@ export function SignupPage() {
 
   const onSubmit = async (data: SignupFormData) => {
     try {
-      setIsLoading(true);
-      // TODO: Implement real signup
-      console.log("Signup attempt:", data);
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    } finally {
-      setIsLoading(false);
+      await signup.mutateAsync({
+        email: data.email,
+        password: data.password,
+        name: data.name,
+        phone: data.phone,
+        role: data.role,
+      });
+      navigate(`/${data.role}/onboarding`);
+    } catch {
+      // Error available via signup.error
     }
   };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-foreground">Create your account</h2>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -100,29 +111,55 @@ export function SignupPage() {
         </p>
       </div>
 
-      {/* Signup Form */}
+      {signup.error && (
+        <div className="rounded-lg bg-destructive/10 p-3">
+          <p className="text-sm text-destructive">{signup.error.message}</p>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Full Name Field */}
+        <div className="grid grid-cols-3 gap-3">
+          {(["owner", "vet", "gig"] as const).map((role) => (
+            <button
+              key={role}
+              type="button"
+              onClick={() => setValue("role", role)}
+              className={cn(
+                "rounded-lg border-2 p-3 text-center transition-all",
+                watch("role") === role
+                  ? "border-primary bg-primary/5"
+                  : "border-border hover:border-primary/50"
+              )}
+            >
+              <p className="text-sm font-medium">
+                {role === "owner" ? "Pet Owner" : role === "vet" ? "Veterinarian" : "Gig Worker"}
+              </p>
+            </button>
+          ))}
+        </div>
+        {errors.role && (
+          <p className="text-xs text-destructive">{errors.role.message}</p>
+        )}
+
         <div className="space-y-2">
-          <label htmlFor="fullName" className="text-sm font-medium text-foreground">
+          <label htmlFor="name" className="text-sm font-medium text-foreground">
             Full Name
           </label>
           <Input
-            id="fullName"
+            id="name"
             type="text"
             placeholder="John Doe"
-            {...register("fullName")}
-            disabled={isLoading}
+            {...register("name")}
+            disabled={signup.isPending}
             className={cn(
-              errors.fullName && "border-destructive focus-visible:ring-destructive"
+              errors.name && "border-destructive focus-visible:ring-destructive"
             )}
           />
-          {errors.fullName && (
-            <p className="text-xs text-destructive">{errors.fullName.message}</p>
+          {errors.name && (
+            <p className="text-xs text-destructive">{errors.name.message}</p>
           )}
         </div>
 
-        {/* Email Field */}
         <div className="space-y-2">
           <label htmlFor="email" className="text-sm font-medium text-foreground">
             Email
@@ -132,7 +169,7 @@ export function SignupPage() {
             type="email"
             placeholder="you@example.com"
             {...register("email")}
-            disabled={isLoading}
+            disabled={signup.isPending}
             className={cn(
               errors.email && "border-destructive focus-visible:ring-destructive"
             )}
@@ -142,7 +179,25 @@ export function SignupPage() {
           )}
         </div>
 
-        {/* Password Field */}
+        <div className="space-y-2">
+          <label htmlFor="phone" className="text-sm font-medium text-foreground">
+            Phone
+          </label>
+          <Input
+            id="phone"
+            type="tel"
+            placeholder="1234567890"
+            {...register("phone")}
+            disabled={signup.isPending}
+            className={cn(
+              errors.phone && "border-destructive focus-visible:ring-destructive"
+            )}
+          />
+          {errors.phone && (
+            <p className="text-xs text-destructive">{errors.phone.message}</p>
+          )}
+        </div>
+
         <div className="space-y-2">
           <label htmlFor="password" className="text-sm font-medium text-foreground">
             Password
@@ -152,7 +207,7 @@ export function SignupPage() {
             type="password"
             placeholder="••••••••"
             {...register("password")}
-            disabled={isLoading}
+            disabled={signup.isPending}
             className={cn(
               errors.password && "border-destructive focus-visible:ring-destructive"
             )}
@@ -161,7 +216,6 @@ export function SignupPage() {
             <p className="text-xs text-destructive">{errors.password.message}</p>
           )}
 
-          {/* Password Strength Indicator */}
           {password && (
             <div className="space-y-2">
               <div className="flex gap-1">
@@ -183,7 +237,6 @@ export function SignupPage() {
             </div>
           )}
 
-          {/* Password Requirements */}
           <div className="space-y-1 pt-2">
             <p className="text-xs text-muted-foreground">Must include:</p>
             <ul className="text-xs text-muted-foreground space-y-1">
@@ -203,7 +256,6 @@ export function SignupPage() {
           </div>
         </div>
 
-        {/* Confirm Password Field */}
         <div className="space-y-2">
           <label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">
             Confirm Password
@@ -213,7 +265,7 @@ export function SignupPage() {
             type="password"
             placeholder="••••••••"
             {...register("confirmPassword")}
-            disabled={isLoading}
+            disabled={signup.isPending}
             className={cn(
               errors.confirmPassword && "border-destructive focus-visible:ring-destructive"
             )}
@@ -223,9 +275,8 @@ export function SignupPage() {
           )}
         </div>
 
-        {/* Sign Up Button */}
-        <Button type="submit" disabled={isLoading} className="w-full">
-          {isLoading ? (
+        <Button type="submit" disabled={signup.isPending} className="w-full">
+          {signup.isPending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Creating account...
@@ -236,7 +287,6 @@ export function SignupPage() {
         </Button>
       </form>
 
-      {/* Divider */}
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-border" />
@@ -246,16 +296,11 @@ export function SignupPage() {
         </div>
       </div>
 
-      {/* Google Sign-Up Button */}
       <Button
         type="button"
         variant="outline"
-        disabled={isLoading}
+        disabled={signup.isPending}
         className="w-full"
-        onClick={() => {
-          // TODO: Implement Google OAuth
-          console.log("Google sign-up clicked");
-        }}
       >
         <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
           <path
@@ -278,7 +323,6 @@ export function SignupPage() {
         Continue with Google
       </Button>
 
-      {/* Sign In Link */}
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{" "}
         <Link to="/login" className="font-medium text-primary hover:underline">

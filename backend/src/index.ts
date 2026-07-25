@@ -11,6 +11,8 @@ import petRoutes from "./routes/pets";
 import { vetOnboardingRouter, vetRouter } from "./routes/vets";
 import { gigOnboardingRouter, gigWorkerRouter } from "./routes/gigWorkers";
 import appointmentRoutes from "./routes/appointments";
+import userRoutes from "./routes/users";
+import reviewRoutes from "./routes/reviews";
 
 const app = express();
 
@@ -29,6 +31,8 @@ app.use("/api/vets", vetRouter);
 app.use("/api/gig", gigOnboardingRouter);
 app.use("/api/gig-workers", gigWorkerRouter);
 app.use("/api/appointments", appointmentRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 app.get("/api/health", (_req, res) => {
   res.json({ success: true, data: { status: "ok", timestamp: new Date().toISOString() } });

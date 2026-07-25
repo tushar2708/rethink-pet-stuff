@@ -75,6 +75,7 @@ export async function create(ownerId: string, data: CreateAppointmentInput) {
       scheduledAt: new Date(data.scheduledAt),
       durationMinutes: data.durationMinutes,
       notes: data.notes,
+      price: data.price,
     },
     include: appointmentInclude,
   });

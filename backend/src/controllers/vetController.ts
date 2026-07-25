@@ -44,3 +44,43 @@ export async function update(req: Request, res: Response, next: NextFunction) {
     next(error);
   }
 }
+
+export async function getMyProfile(req: Request, res: Response, next: NextFunction) {
+  try {
+    const authReq = req as AuthenticatedRequest;
+    const result = await vetService.getByUserId(authReq.user.userId);
+    res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getPatients(req: Request, res: Response, next: NextFunction) {
+  try {
+    const authReq = req as AuthenticatedRequest;
+    const result = await vetService.getPatients(authReq.user.userId);
+    res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getPatientDetail(req: Request, res: Response, next: NextFunction) {
+  try {
+    const authReq = req as AuthenticatedRequest;
+    const result = await vetService.getPatientDetail(authReq.user.userId, req.params.petId as string);
+    res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateSchedule(req: Request, res: Response, next: NextFunction) {
+  try {
+    const authReq = req as AuthenticatedRequest;
+    const result = await vetService.updateSchedule(authReq.user.userId, req.body.schedule);
+    res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+}

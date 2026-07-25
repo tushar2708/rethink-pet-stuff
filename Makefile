@@ -1,7 +1,7 @@
 .PHONY: help dev dev-frontend dev-backend install install-frontend install-backend \
        build build-frontend build-backend \
-       db-generate db-migrate db-push db-studio db-reset \
-       docker-build docker-run kill-port lint lint-frontend lint-backend \
+       db-generate db-migrate db-migrate-create db-migrate-status db-push db-studio db-reset \
+       docker-build docker-run stop kill-port lint lint-frontend lint-backend \
        typecheck typecheck-frontend typecheck-backend
 
 help: ## Show this help
@@ -19,10 +19,19 @@ install-backend: ## Install backend dependencies
 
 # ── Development ──────────────────────────────────────────────
 
-dev: ## Start both frontend and backend (requires two terminals)
-	@echo "Run in separate terminals:"
-	@echo "  make dev-frontend   (port 5173)"
-	@echo "  make dev-backend    (port 3001)"
+dev: stop ## Start backend then frontend (both in background)
+	@echo "Starting backend (port 3001)..."
+	@cd /Users/tushar/Documents/RethinkSystem/PetStuff/backend && npm run dev &
+	@sleep 2
+	@echo "Starting frontend (port 5173)..."
+	@cd /Users/tushar/Documents/RethinkSystem/PetStuff && npm run dev &
+	@sleep 2
+	@echo ""
+	@echo "✓ Backend:  http://localhost:3001"
+	@echo "✓ Frontend: http://localhost:5173"
+	@echo ""
+	@echo "Run 'make stop' to stop both."
+	@wait
 
 dev-frontend: ## Start frontend dev server (port 5173)
 	cd /Users/tushar/Documents/RethinkSystem/PetStuff && npm run dev
@@ -45,10 +54,16 @@ build-backend: ## Build backend TypeScript
 db-generate: ## Generate Prisma client
 	cd /Users/tushar/Documents/RethinkSystem/PetStuff/backend && npx prisma generate
 
-db-migrate: ## Run Prisma migrations (dev)
+db-migrate: ## Create and apply Prisma migration (dev)
 	cd /Users/tushar/Documents/RethinkSystem/PetStuff/backend && npx prisma migrate dev
 
-db-push: ## Push schema to DB without migration
+db-migrate-create: ## Create migration without applying (requires NAME=xxx)
+	cd /Users/tushar/Documents/RethinkSystem/PetStuff/backend && npx prisma migrate dev --create-only --name $(NAME)
+
+db-migrate-status: ## Check migration status (pending/applied)
+	cd /Users/tushar/Documents/RethinkSystem/PetStuff/backend && npx prisma migrate status
+
+db-push: ## Push schema to DB without migration file
 	cd /Users/tushar/Documents/RethinkSystem/PetStuff/backend && npx prisma db push
 
 db-studio: ## Open Prisma Studio
@@ -83,6 +98,13 @@ docker-run: ## Run Docker container locally
 	cd /Users/tushar/Documents/RethinkSystem/PetStuff && docker run -p 3001:3001 --env-file backend/.env -e NODE_ENV=production petstuff
 
 # ── Utilities ────────────────────────────────────────────────
+
+stop: ## Stop backend (3001) then frontend (5173)
+	@echo "Stopping backend (port 3001)..."
+	@lsof -ti :3001 | xargs kill -9 2>/dev/null || true
+	@echo "Stopping frontend (port 5173)..."
+	@lsof -ti :5173 | xargs kill -9 2>/dev/null || true
+	@echo "Done."
 
 kill-port: ## Kill any process on port 3001
 	@lsof -ti :3001 | xargs kill -9 2>/dev/null || true

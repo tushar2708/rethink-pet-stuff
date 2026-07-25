@@ -21,6 +21,12 @@ vetOnboardingRouter.post(
 
 export const vetRouter = Router();
 
+// Authenticated vet's own profile — MUST be before /:id
+vetRouter.get("/me", authMiddleware as any, requireRole("vet") as any, vetController.getMyProfile);
+vetRouter.get("/me/patients", authMiddleware as any, requireRole("vet") as any, vetController.getPatients);
+vetRouter.get("/me/patients/:petId", authMiddleware as any, requireRole("vet") as any, vetController.getPatientDetail);
+vetRouter.put("/me/schedule", authMiddleware as any, requireRole("vet") as any, vetController.updateSchedule);
+
 vetRouter.get("/search", validate({ query: vetSearchQuerySchema }), vetController.search);
 vetRouter.get("/:id", validate({ params: idParamSchema }), vetController.getById);
 vetRouter.put(

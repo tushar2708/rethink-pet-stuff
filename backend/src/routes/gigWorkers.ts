@@ -21,6 +21,13 @@ gigOnboardingRouter.post(
 
 export const gigWorkerRouter = Router();
 
+// Authenticated gig worker's own endpoints — MUST be before /:id
+gigWorkerRouter.get("/me", authMiddleware as any, requireRole("gig") as any, gigWorkerController.getMyProfile);
+gigWorkerRouter.get("/me/jobs/available", authMiddleware as any, requireRole("gig") as any, gigWorkerController.getAvailableJobs);
+gigWorkerRouter.get("/me/jobs/active", authMiddleware as any, requireRole("gig") as any, gigWorkerController.getActiveJobs);
+gigWorkerRouter.get("/me/jobs/history", authMiddleware as any, requireRole("gig") as any, gigWorkerController.getJobHistory);
+gigWorkerRouter.get("/me/earnings", authMiddleware as any, requireRole("gig") as any, gigWorkerController.getEarnings);
+
 gigWorkerRouter.get(
   "/search",
   validate({ query: gigSearchQuerySchema }),

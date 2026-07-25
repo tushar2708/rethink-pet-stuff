@@ -27,13 +27,61 @@ import {
   VetProfileSetup,
   VetComplete,
 } from "@/features/vet/onboarding/steps";
+import { GigPersonalInfo } from "@/features/gig/onboarding/steps/GigPersonalInfo";
+import { GigServices } from "@/features/gig/onboarding/steps/GigServices";
+import { GigAvailability } from "@/features/gig/onboarding/steps/GigAvailability";
+import { GigAbout } from "@/features/gig/onboarding/steps/GigAbout";
+import { GigConsent } from "@/features/gig/onboarding/steps/GigConsent";
+import { GigComplete } from "@/features/gig/onboarding/steps/GigComplete";
+import { OwnerDashboard } from "@/features/owner/dashboard/OwnerDashboard";
+import { AddPetType } from "@/features/owner/pets/steps/AddPetType";
+import { AddPetDetails } from "@/features/owner/pets/steps/AddPetDetails";
+import { AddPetTemperament } from "@/features/owner/pets/steps/AddPetTemperament";
+import { AddPetComplete } from "@/features/owner/pets/steps/AddPetComplete";
+import { PetDetailPage } from "@/features/owner/pets/PetDetailPage";
+import { PetEditPage } from "@/features/owner/pets/PetEditPage";
+import { FindVetPage } from "@/features/owner/find/FindVetPage";
+import { VetProfilePage as OwnerVetProfilePage } from "@/features/owner/find/VetProfilePage";
+import { FindWorkerPage } from "@/features/owner/find/FindWorkerPage";
+import { WorkerProfilePage } from "@/features/owner/find/WorkerProfilePage";
+import { OwnerAppointmentsPage } from "@/features/owner/appointments/OwnerAppointmentsPage";
+import { OwnerAppointmentDetail } from "@/features/owner/appointments/OwnerAppointmentDetail";
+import { NewBookingPage } from "@/features/owner/appointments/NewBookingPage";
+import { OwnerSettingsPage } from "@/features/owner/settings/OwnerSettingsPage";
+import { VetDashboard } from "@/features/vet/dashboard/VetDashboard";
+import { VetAppointmentsPage } from "@/features/vet/appointments/VetAppointmentsPage";
+import { VetAppointmentDetail } from "@/features/vet/appointments/VetAppointmentDetail";
+import { VetPatientsPage } from "@/features/vet/patients/VetPatientsPage";
+import { VetPatientDetail } from "@/features/vet/patients/VetPatientDetail";
+import { VetSchedulePage } from "@/features/vet/schedule/VetSchedulePage";
+import { VetProfilePage } from "@/features/vet/profile/VetProfilePage";
+import { VetSettingsPage } from "@/features/vet/settings/VetSettingsPage";
+import { GigDashboard } from "@/features/gig/dashboard/GigDashboard";
+import { GigJobsPage } from "@/features/gig/jobs/GigJobsPage";
+import { GigActiveJobs } from "@/features/gig/jobs/GigActiveJobs";
+import { GigJobHistory } from "@/features/gig/jobs/GigJobHistory";
+import { GigJobDetail } from "@/features/gig/jobs/GigJobDetail";
+import { GigEarningsPage } from "@/features/gig/earnings/GigEarningsPage";
+import { GigProfilePage } from "@/features/gig/profile/GigProfilePage";
+import { GigSettingsPage } from "@/features/gig/settings/GigSettingsPage";
 
-function P({ title }: { title: string }) {
+function ErrorPage() {
   return (
     <div className="flex min-h-[50vh] items-center justify-center">
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-foreground">{title}</h1>
-        <p className="mt-2 text-muted-foreground">Coming soon</p>
+        <h1 className="text-2xl font-bold text-foreground">Something went wrong</h1>
+        <p className="mt-2 text-muted-foreground">Please try refreshing the page</p>
+      </div>
+    </div>
+  );
+}
+
+function NotFoundPage() {
+  return (
+    <div className="flex min-h-[50vh] items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-foreground">404 — Page Not Found</h1>
+        <p className="mt-2 text-muted-foreground">The page you're looking for doesn't exist</p>
       </div>
     </div>
   );
@@ -43,7 +91,7 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
-    errorElement: <P title="Something went wrong" />,
+    errorElement: <ErrorPage />,
     children: [
       { index: true, element: <LandingPage /> },
 
@@ -83,27 +131,27 @@ export const router = createBrowserRouter([
             ),
             children: [
               { index: true, element: <Navigate to="dashboard" replace /> },
-              { path: "dashboard", element: <P title="Owner Dashboard" /> },
+              { path: "dashboard", element: <OwnerDashboard /> },
               {
                 path: "pets/add",
                 children: [
                   { index: true, element: <Navigate to="pet-type" replace /> },
-                  { path: "pet-type", element: <P title="Add Pet — Type" /> },
-                  { path: "pet-details", element: <P title="Add Pet — Details" /> },
-                  { path: "temperament", element: <P title="Add Pet — Temperament" /> },
-                  { path: "complete", element: <P title="Pet Added!" /> },
+                  { path: "pet-type", element: <AddPetType /> },
+                  { path: "pet-details", element: <AddPetDetails /> },
+                  { path: "temperament", element: <AddPetTemperament /> },
+                  { path: "complete", element: <AddPetComplete /> },
                 ],
               },
-              { path: "pets/:petId", element: <P title="Pet Detail" /> },
-              { path: "pets/:petId/edit", element: <P title="Edit Pet" /> },
-              { path: "find-vet", element: <P title="Find a Vet" /> },
-              { path: "find-vet/:vetId", element: <P title="Vet Profile" /> },
-              { path: "find-worker", element: <P title="Find a Worker" /> },
-              { path: "find-worker/:workerId", element: <P title="Worker Profile" /> },
-              { path: "appointments", element: <P title="Appointments" /> },
-              { path: "appointments/:appointmentId", element: <P title="Appointment Detail" /> },
-              { path: "bookings/new", element: <P title="New Booking" /> },
-              { path: "settings", element: <P title="Settings" /> },
+              { path: "pets/:petId", element: <PetDetailPage /> },
+              { path: "pets/:petId/edit", element: <PetEditPage /> },
+              { path: "find-vet", element: <FindVetPage /> },
+              { path: "find-vet/:vetId", element: <OwnerVetProfilePage /> },
+              { path: "find-worker", element: <FindWorkerPage /> },
+              { path: "find-worker/:workerId", element: <WorkerProfilePage /> },
+              { path: "appointments", element: <OwnerAppointmentsPage /> },
+              { path: "appointments/:appointmentId", element: <OwnerAppointmentDetail /> },
+              { path: "bookings/new", element: <NewBookingPage /> },
+              { path: "settings", element: <OwnerSettingsPage /> },
             ],
           },
         ],
@@ -137,14 +185,14 @@ export const router = createBrowserRouter([
             ),
             children: [
               { index: true, element: <Navigate to="dashboard" replace /> },
-              { path: "dashboard", element: <P title="Vet Dashboard" /> },
-              { path: "appointments", element: <P title="Appointments" /> },
-              { path: "appointments/:appointmentId", element: <P title="Appointment Detail" /> },
-              { path: "patients", element: <P title="Patients" /> },
-              { path: "patients/:petId", element: <P title="Patient Detail" /> },
-              { path: "schedule", element: <P title="Manage Schedule" /> },
-              { path: "profile", element: <P title="Edit Profile" /> },
-              { path: "settings", element: <P title="Settings" /> },
+              { path: "dashboard", element: <VetDashboard /> },
+              { path: "appointments", element: <VetAppointmentsPage /> },
+              { path: "appointments/:appointmentId", element: <VetAppointmentDetail /> },
+              { path: "patients", element: <VetPatientsPage /> },
+              { path: "patients/:petId", element: <VetPatientDetail /> },
+              { path: "schedule", element: <VetSchedulePage /> },
+              { path: "profile", element: <VetProfilePage /> },
+              { path: "settings", element: <VetSettingsPage /> },
             ],
           },
         ],
@@ -160,12 +208,12 @@ export const router = createBrowserRouter([
             element: <OnboardingLayout portal="gig" steps={GIG_STEP_LABELS} />,
             children: [
               { index: true, element: <Navigate to="personal-info" replace /> },
-              { path: "personal-info", element: <P title="Hey There!" /> },
-              { path: "services", element: <P title="What Can You Do?" /> },
-              { path: "availability", element: <P title="When & Where?" /> },
-              { path: "about", element: <P title="About You" /> },
-              { path: "consent", element: <P title="One Last Thing" /> },
-              { path: "complete", element: <P title="You're In!" /> },
+              { path: "personal-info", element: <GigPersonalInfo /> },
+              { path: "services", element: <GigServices /> },
+              { path: "availability", element: <GigAvailability /> },
+              { path: "about", element: <GigAbout /> },
+              { path: "consent", element: <GigConsent /> },
+              { path: "complete", element: <GigComplete /> },
             ],
           },
           // Dashboard (auth-protected)
@@ -177,21 +225,21 @@ export const router = createBrowserRouter([
             ),
             children: [
               { index: true, element: <Navigate to="dashboard" replace /> },
-              { path: "dashboard", element: <P title="Gig Dashboard" /> },
-              { path: "jobs", element: <P title="Available Jobs" /> },
-              { path: "jobs/active", element: <P title="Active Jobs" /> },
-              { path: "jobs/history", element: <P title="Job History" /> },
-              { path: "jobs/:jobId", element: <P title="Job Detail" /> },
-              { path: "earnings", element: <P title="Earnings" /> },
-              { path: "profile", element: <P title="Edit Profile" /> },
-              { path: "settings", element: <P title="Settings" /> },
+              { path: "dashboard", element: <GigDashboard /> },
+              { path: "jobs", element: <GigJobsPage /> },
+              { path: "jobs/active", element: <GigActiveJobs /> },
+              { path: "jobs/history", element: <GigJobHistory /> },
+              { path: "jobs/:jobId", element: <GigJobDetail /> },
+              { path: "earnings", element: <GigEarningsPage /> },
+              { path: "profile", element: <GigProfilePage /> },
+              { path: "settings", element: <GigSettingsPage /> },
             ],
           },
         ],
       },
 
       // === 404 ===
-      { path: "*", element: <P title="404 — Page Not Found" /> },
+      { path: "*", element: <NotFoundPage /> },
     ],
   },
 ]);

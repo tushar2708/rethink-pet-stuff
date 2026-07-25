@@ -258,3 +258,100 @@ export async function search(query: GigSearchQuery) {
     limit,
   };
 }
+
+export async function getByUserId(userId: string) {
+  const profile = await prisma.gigWorkerProfile.findUnique({
+    where: { userId },
+    include: gigWorkerInclude,
+  });
+  if (!profile) {
+    throw new AppError(404, "Gig worker profile not found");
+  }
+  return normalizeProfile(profile);
+}
+
+export async function getAvailableJobs(userId: string) {
+  const profile = await prisma.gigWorkerProfile.findUnique({
+    where: { userId },
+    include: { services: true },
+  });
+  if (!profile) throw new AppError(404, "Gig worker profile not found");
+
+  const serviceTypes = profile.services.map((s) => s.type);
+
+  const jobs = await prisma.appointment.findMany({
+    where: {
+      providerType: "gig",
+      status: "pending",
+      serviceType: { in: serviceTypes },
+    },
+    include: {
+      pet: { select: { id: true, name: true, type: true, breed: true } },
+      owner: { select: { id: true, name: true, phone: true } },
+    },
+    orderBy: { scheduledAt: "asc" },
+  });
+  return jobs;
+}
+
+export async function getActiveJobs(userId: string) {
+  const jobs = await prisma.appointment.findMany({
+    where: {
+      providerId: userId,
+      providerType: "gig",
+      status: { in: ["confirmed", "in_progress"] },
+    },
+    include: {
+      pet: { select: { id: true, name: true, type: true, breed: true } },
+      owner: { select: { id: true, name: true, phone: true } },
+    },
+    orderBy: { scheduledAt: "asc" },
+  });
+  return jobs;
+}
+
+export async function getJobHistory(userId: string) {
+  const jobs = await prisma.appointment.findMany({
+    where: {
+      providerId: userId,
+      providerType: "gig",
+      status: { in: ["completed", "cancelled"] },
+    },
+    include: {
+      pet: { select: { id: true, name: true, type: true } },
+      owner: { select: { id: true, name: true } },
+    },
+    orderBy: { scheduledAt: "desc" },
+  });
+  return jobs;
+}
+
+export async function getEarnings(userId: string) {
+  const completed = await prisma.appointment.findMany({
+    where: {
+      providerId: userId,
+      providerType: "gig",
+      status: "completed",
+    },
+    select: { price: true, durationMinutes: true, serviceType: true, scheduledAt: true },
+  });
+
+  const now = new Date();
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - now.getDay());
+  startOfWeek.setHours(0, 0, 0, 0);
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  let total = 0;
+  let thisWeek = 0;
+  let thisMonth = 0;
+
+  for (const job of completed) {
+    const amount = job.price ? Number(job.price) : 0;
+    total += amount;
+    if (job.scheduledAt >= startOfMonth) thisMonth += amount;
+    if (job.scheduledAt >= startOfWeek) thisWeek += amount;
+  }
+
+  return { total, thisWeek, thisMonth, completedJobs: completed.length };
+}

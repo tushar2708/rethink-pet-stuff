@@ -1,11 +1,13 @@
 import { useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
+import { useMutation } from "@tanstack/react-query"
 import { useOwnerOnboardingStore } from "@/stores/ownerOnboardingStore"
 import { useMultiStepForm } from "@/hooks/useMultiStepForm"
 import { OWNER_STEPS } from "@/features/owner/onboarding/config"
 import { StepWrapper } from "@/components/shared/StepWrapper"
 import { ConfettiCelebration } from "@/components/shared/ConfettiCelebration"
 import { Button } from "@/components/ui/button"
+import { apiFetch } from "@/lib/api"
 import type { OwnerOnboardingData } from "@/stores/ownerOnboardingStore"
 
 export function OwnerComplete() {
@@ -18,6 +20,28 @@ export function OwnerComplete() {
     setStepData,
   })
 
+  const submitMutation = useMutation({
+    mutationFn: () => {
+      const payload = {
+        name: data.name || "",
+        phone: data.phone || "",
+        petName: data.petName || "",
+        petType: data.petType || "dog",
+        customType: data.customType,
+        breed: data.breed,
+        ageYears: data.ageYears ? Number(data.ageYears) : undefined,
+        ageMonths: data.ageMonths ? Number(data.ageMonths) : undefined,
+        temperament: data.temperament || "calm",
+        energyLevel: data.energyLevel || "low",
+        petPhoto: typeof data.petPhoto === "string" ? data.petPhoto : undefined,
+      }
+      return apiFetch("/owner/onboarding", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      })
+    },
+  })
+
   const petPhoto = data.petPhoto as string | undefined
   const PET_TYPE_LABELS: Record<string, string> = {
     dog: "🐕 Dog",
@@ -26,21 +50,24 @@ export function OwnerComplete() {
     hamster: "🐹 Hamster",
   }
 
-  const handleGoToDashboard = () => {
-    clearData()
-    navigate("/owner/dashboard")
+  const handleGoToDashboard = async () => {
+    try {
+      await submitMutation.mutateAsync()
+      clearData()
+      navigate("/owner/dashboard")
+    } catch {
+      // Error shown via submitMutation.error
+    }
   }
 
-  const handleAddAnotherPet = () => {
-    // Clear only pet-related data, keep owner info
-    const ownerData = {
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
+  const handleAddAnotherPet = async () => {
+    try {
+      await submitMutation.mutateAsync()
+      clearData()
+      navigate("/owner/onboarding/pet-type")
+    } catch {
+      // Error shown via submitMutation.error
     }
-    clearData()
-    setStepData(ownerData)
-    navigate("/owner/onboarding/pet-type")
   }
 
   return (
@@ -53,7 +80,6 @@ export function OwnerComplete() {
         showNav={false}
         className="flex flex-col items-center"
       >
-        {/* Celebration Icon */}
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -68,7 +94,6 @@ export function OwnerComplete() {
           🎉
         </motion.div>
 
-        {/* Summary Card */}
         <motion.div
           initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -76,18 +101,15 @@ export function OwnerComplete() {
           className="w-full rounded-lg border border-border bg-card p-6"
         >
           <div className="flex flex-col gap-4">
-            {/* Owner Info */}
             <div className="border-b border-border pb-4">
               <p className="text-xs text-muted-foreground mb-2">Owner</p>
               <p className="text-lg font-semibold text-foreground">{data.name}</p>
               <p className="text-sm text-muted-foreground">{data.email}</p>
             </div>
 
-            {/* Pet Info */}
             <div className="flex flex-col gap-3">
               <p className="text-xs text-muted-foreground">Your Pet</p>
 
-              {/* Pet Photo (if available) */}
               {petPhoto && (
                 <div className="flex justify-center">
                   <img
@@ -98,7 +120,6 @@ export function OwnerComplete() {
                 </div>
               )}
 
-              {/* Pet Details */}
               <div className="space-y-2">
                 <div>
                   <p className="text-sm font-semibold text-foreground">{data.petName}</p>
@@ -133,7 +154,12 @@ export function OwnerComplete() {
           </div>
         </motion.div>
 
-        {/* Action Buttons */}
+        {submitMutation.error && (
+          <div className="mt-4 w-full rounded-lg bg-destructive/10 p-3">
+            <p className="text-sm text-destructive">{submitMutation.error.message}</p>
+          </div>
+        )}
+
         <motion.div
           initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -145,14 +171,16 @@ export function OwnerComplete() {
             size="lg"
             onClick={handleGoToDashboard}
             className="w-full"
+            disabled={submitMutation.isPending}
           >
-            Go to Dashboard
+            {submitMutation.isPending ? "Saving..." : "Go to Dashboard"}
           </Button>
           <Button
             variant="outline"
             size="lg"
             onClick={handleAddAnotherPet}
             className="w-full"
+            disabled={submitMutation.isPending}
           >
             Add Another Pet
           </Button>
