@@ -6,17 +6,29 @@ import morgan from "morgan";
 import { config } from "./config/env";
 import { errorHandler } from "./middleware/errorHandler";
 import authRoutes from "./routes/auth";
+import ownerRoutes from "./routes/owner";
+import petRoutes from "./routes/pets";
+import { vetOnboardingRouter, vetRouter } from "./routes/vets";
+import { gigOnboardingRouter, gigWorkerRouter } from "./routes/gigWorkers";
+import appointmentRoutes from "./routes/appointments";
 
 const app = express();
 
 // Middleware
-app.use(helmet({ contentSecurityPolicy: false }));
+app.use(helmet());
 app.use(cors({ origin: config.CORS_ORIGIN, credentials: true }));
 app.use(express.json({ limit: "2mb" }));
 app.use(morgan(config.NODE_ENV === "development" ? "dev" : "combined"));
 
 // API Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/owner", ownerRoutes);
+app.use("/api/pets", petRoutes);
+app.use("/api/vet", vetOnboardingRouter);
+app.use("/api/vets", vetRouter);
+app.use("/api/gig", gigOnboardingRouter);
+app.use("/api/gig-workers", gigWorkerRouter);
+app.use("/api/appointments", appointmentRoutes);
 
 app.get("/api/health", (_req, res) => {
   res.json({ success: true, data: { status: "ok", timestamp: new Date().toISOString() } });
