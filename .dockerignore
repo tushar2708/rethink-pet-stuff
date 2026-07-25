@@ -1,0 +1,10 @@
+node_modules
+backend/node_modules
+backend/dist
+dist
+.git
+.idea
+*.iml
+.env
+backend/.env
+docs
