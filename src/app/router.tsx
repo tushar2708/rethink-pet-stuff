@@ -53,6 +53,9 @@ import { OwnerAppointmentsPage } from "@/features/owner/appointments/OwnerAppoin
 import { OwnerAppointmentDetail } from "@/features/owner/appointments/OwnerAppointmentDetail";
 import { NewBookingPage } from "@/features/owner/appointments/NewBookingPage";
 import { OwnerSettingsPage } from "@/features/owner/settings/OwnerSettingsPage";
+import { HealthRecordsPage } from "@/features/owner/health/HealthRecordsPage";
+import { VaccinationsPage } from "@/features/owner/health/VaccinationsPage";
+import { ServicesPage } from "@/features/owner/services/ServicesPage";
 import { VetDashboard } from "@/features/vet/dashboard/VetDashboard";
 import { VetAppointmentsPage } from "@/features/vet/appointments/VetAppointmentsPage";
 import { VetAppointmentDetail } from "@/features/vet/appointments/VetAppointmentDetail";
@@ -158,6 +161,9 @@ export const router = createBrowserRouter([
               { path: "pets/:petId/health", element: <PetHealthTimeline /> },
               { path: "pets/:petId/medical", element: <PetMedicalHistory /> },
               { path: "pets/:petId/edit", element: <PetEditPage /> },
+              { path: "health-records", element: <HealthRecordsPage /> },
+              { path: "vaccinations", element: <VaccinationsPage /> },
+              { path: "services", element: <ServicesPage /> },
               { path: "find-vet", element: <FindVetPage /> },
               { path: "find-vet/:vetId", element: <OwnerVetProfilePage /> },
               { path: "find-worker", element: <FindWorkerPage /> },

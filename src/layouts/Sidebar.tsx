@@ -12,6 +12,7 @@ import {
   Briefcase,
   DollarSign,
   LogOut,
+  Shield,
 } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,7 @@ const ICONS = {
   UserCircle,
   Briefcase,
   DollarSign,
+  Shield,
 };
 
 type IconName = keyof typeof ICONS;

@@ -19,7 +19,7 @@ export function GigProfilePage() {
           <p className="text-sm text-muted-foreground">Coverage ZIP: {profile.coverageZip}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {profile.services?.map((service: any) => <Badge key={service.type}>{service.type}: ${service.hourlyRate}/hr</Badge>)}
+          {profile.services?.map((service: any) => <Badge key={service.type}>{service.type}: ₹{service.hourlyRate}/hr</Badge>)}
         </div>
         <p className="text-sm text-muted-foreground">{profile.bio}</p>
       </Card>

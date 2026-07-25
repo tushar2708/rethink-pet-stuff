@@ -20,7 +20,7 @@ export function GigJobHistory() {
               </div>
               <div className="text-right">
                 <Badge>{job.status}</Badge>
-                <p className="mt-2 text-sm text-muted-foreground">${job.price ?? 0}</p>
+                <p className="mt-2 text-sm text-muted-foreground">₹{job.price ?? 0}</p>
               </div>
             </div>
           </div>

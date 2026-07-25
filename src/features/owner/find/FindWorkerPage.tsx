@@ -34,7 +34,7 @@ export function FindWorkerPage() {
                 <p className="font-semibold text-foreground">{worker.firstName}</p>
                 <div className="flex flex-wrap gap-2">
                   {worker.services?.slice(0, 3).map((service: any) => (
-                    <Badge key={service.type} variant="secondary">{service.type}: ${service.hourlyRate}/hr</Badge>
+                    <Badge key={service.type} variant="secondary">{service.type}: ₹{service.hourlyRate}/hr</Badge>
                   ))}
                 </div>
                 <p className="text-sm text-muted-foreground">Rating: {worker.rating ?? "No ratings yet"}</p>

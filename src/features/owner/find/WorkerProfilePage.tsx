@@ -25,7 +25,7 @@ export function WorkerProfilePage() {
         </Link>
       </div>
       <div className="flex flex-wrap gap-2">
-        {worker.services?.map((service: any) => <Badge key={service.type}>{service.type}: ${service.hourlyRate}/hr</Badge>)}
+        {worker.services?.map((service: any) => <Badge key={service.type}>{service.type}: ₹{service.hourlyRate}/hr</Badge>)}
       </div>
       <p className="text-sm text-muted-foreground">{worker.bio}</p>
       <div>

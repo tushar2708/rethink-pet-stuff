@@ -6,9 +6,12 @@ export interface NavItem {
 
 export const OWNER_NAV: NavItem[] = [
   { label: "Dashboard", path: "/owner/dashboard", icon: "LayoutDashboard" },
+  { label: "Health Records", path: "/owner/health-records", icon: "ClipboardList" },
+  { label: "Vaccinations", path: "/owner/vaccinations", icon: "Shield" },
+  { label: "Services", path: "/owner/services", icon: "Briefcase" },
+  { label: "Appointments", path: "/owner/appointments", icon: "Calendar" },
   { label: "Find Vet", path: "/owner/find-vet", icon: "Stethoscope" },
   { label: "Find Worker", path: "/owner/find-worker", icon: "Users" },
-  { label: "Appointments", path: "/owner/appointments", icon: "Calendar" },
   { label: "Settings", path: "/owner/settings", icon: "Settings" },
 ];
 
