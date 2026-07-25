@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+@theme {
+  /* Portal-aware primary/accent */
+  --color-primary: var(--portal-primary, #F59E0B);
+  --color-primary-foreground: #ffffff;
+  --color-accent: var(--portal-accent, #14B8A6);
+  --color-accent-foreground: #0f172a;
+
+  /* Core palette */
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
+  --color-card: #ffffff;
+  --color-card-foreground: #0f172a;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #0f172a;
+  --color-secondary: #f1f5f9;
+  --color-secondary-foreground: #0f172a;
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #64748b;
+  --color-destructive: #ef4444;
+  --color-success: #10b981;
+  --color-border: #e2e8f0;
+  --color-input: #e2e8f0;
+  --color-ring: var(--portal-primary, #F59E0B);
+
+  /* Radii */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-full: 9999px;
+}
+
+[data-portal="owner"] {
+  --portal-primary: #F59E0B;
+  --portal-accent: #14B8A6;
+}
+
+[data-portal="vet"] {
+  --portal-primary: #3B82F6;
+  --portal-accent: #10B981;
+}
+
+[data-portal="gig"] {
+  --portal-primary: #F97316;
+  --portal-accent: #22C55E;
+}
+
+body {
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
